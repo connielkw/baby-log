@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Firebase App (required) -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
-<!-- Firebase Realtime Database -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Joelle's Baby Schedule Log</title>
+    
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -39,7 +40,6 @@
             overflow: hidden;
         }
 
-        /* ============= HEADER ============= */
         header {
             background: white;
             padding: 12px;
@@ -61,7 +61,16 @@
             font-weight: 600;
         }
 
-        /* ============= CONTENT WRAPPER ============= */
+        .sync-status {
+            font-size: 0.75em;
+            color: #4caf50;
+            margin-top: 3px;
+        }
+
+        .sync-status.offline {
+            color: #ff9800;
+        }
+
         .content-wrapper {
             display: flex;
             flex-direction: column;
@@ -70,7 +79,6 @@
             flex: 1;
         }
 
-        /* ============= TABS ============= */
         .tabs {
             display: flex;
             gap: 5px;
@@ -106,7 +114,6 @@
             border-color: #667eea;
         }
 
-        /* ============= TAB CONTENT ============= */
         .tab-content {
             display: none;
             flex: 1;
@@ -120,7 +127,6 @@
             flex-direction: column;
         }
 
-        /* ============= SECTION 1: INPUT LOG ============= */
         .section-input {
             background: white;
             border-radius: 10px;
@@ -141,7 +147,6 @@
             flex-shrink: 0;
         }
 
-        /* ============= SECTION 2A: TODAY'S LOG ============= */
         .section-today {
             background: white;
             border-radius: 10px;
@@ -204,7 +209,6 @@
             min-height: 0;
         }
 
-        /* ============= SECTION 2B: DETAILED RECORDS ============= */
         .section-detailed {
             background: white;
             border-radius: 10px;
@@ -224,7 +228,6 @@
             flex-shrink: 0;
         }
 
-        /* ============= VERTICAL SCROLL FOR ALL RECORDS ============= */
         .detailed-scroll {
             flex: 1;
             overflow-y: auto;
@@ -348,7 +351,6 @@
             font-size: 0.85em;
         }
 
-        /* ============= FORM ELEMENTS ============= */
         .form-group {
             margin-bottom: 10px;
         }
@@ -472,7 +474,6 @@
             border-color: #667eea;
         }
 
-        /* Scrollable ML Selector */
         .ml-scroll-container {
             background: #f5f5f5;
             border: 2px solid #ddd;
@@ -560,7 +561,6 @@
             margin-top: 8px;
         }
 
-        /* ============= MEAL NUTRITION CHECKBOXES ============= */
         .nutrition-checkboxes {
             display: none;
             background: #f5f5f5;
@@ -740,7 +740,6 @@
             background: #ff5252;
         }
 
-        /* ============= RESPONSIVE: TABLET ============= */
         @media (min-width: 768px) {
             .tabs {
                 display: none;
@@ -777,7 +776,6 @@
             }
         }
 
-        /* ============= RESPONSIVE: DESKTOP ============= */
         @media (min-width: 1200px) {
             .content-wrapper {
                 display: grid;
@@ -791,7 +789,6 @@
             }
         }
 
-        /* ============= SCROLLBAR STYLING ============= */
         ::-webkit-scrollbar {
             width: 4px;
             height: 4px;
@@ -809,22 +806,19 @@
 </head>
 <body>
     <div class="app">
-        <!-- HEADER -->
         <header>
             <h1>👶 Joelle's Log</h1>
             <div class="age-info" id="ageInfo"></div>
+            <div class="sync-status" id="syncStatus">🟢 Synced</div>
         </header>
 
-        <!-- CONTENT WRAPPER -->
         <div class="content-wrapper">
-            <!-- MOBILE TABS -->
             <div class="tabs">
                 <button class="tab-btn active" onclick="switchTab('log')">📝 Log</button>
                 <button class="tab-btn" onclick="switchTab('today')">📅 Today</button>
                 <button class="tab-btn" onclick="switchTab('all')">📋 All</button>
             </div>
 
-            <!-- TAB: LOG INPUT -->
             <div id="log-tab" class="tab-content active">
                 <div class="section-input">
                     <h2>📝 Quick Log</h2>
@@ -857,7 +851,6 @@
                         </button>
                     </div>
 
-                    <!-- Wake/Sleep -->
                     <div id="wake-fields" class="conditional-field active">
                         <div class="wake-sleep-selector">
                             <button type="button" class="wake-sleep-btn active" onclick="selectWakeOrSleep('wake')">⏰ Wake Up</button>
@@ -871,7 +864,6 @@
                         </div>
                     </div>
 
-                    <!-- Formula -->
                     <div id="formula-fields" class="conditional-field">
                         <div class="ml-scroll-container">
                             <div class="ml-scroll-label">Select Amount (ml) <span class="optional-label">Optional</span></div>
@@ -896,7 +888,6 @@
                         </div>
                     </div>
 
-                    <!-- Meal -->
                     <div id="meal-fields" class="conditional-field">
                         <div class="form-group">
                             <label>Meal Type <span class="optional-label">Optional</span></label>
@@ -934,7 +925,6 @@
                         </div>
                     </div>
 
-                    <!-- Diaper -->
                     <div id="diaper-fields" class="conditional-field">
                         <div class="form-group">
                             <label for="diaperType">Type</label>
@@ -964,7 +954,6 @@
                         </div>
                     </div>
 
-                    <!-- Nap -->
                     <div id="nap-fields" class="conditional-field">
                         <div class="form-group">
                             <label for="napStartTime">Nap Start Time</label>
@@ -980,7 +969,6 @@
                         </div>
                     </div>
 
-                    <!-- Special -->
                     <div id="special-fields" class="conditional-field">
                         <div class="form-group">
                             <label for="specialType">Type</label>
@@ -1034,7 +1022,6 @@
                 </div>
             </div>
 
-            <!-- TAB: TODAY'S LOG -->
             <div id="today-tab" class="tab-content">
                 <div class="section-today">
                     <div class="today-header">
@@ -1048,7 +1035,6 @@
                 </div>
             </div>
 
-            <!-- TAB: ALL RECORDS -->
             <div id="all-tab" class="tab-content">
                 <div class="section-detailed">
                     <h3>📋 All Records</h3>
@@ -1058,7 +1044,6 @@
                 </div>
             </div>
 
-            <!-- LOGS COLUMN FOR TABLET/DESKTOP -->
             <div class="logs-column" style="display: none;">
                 <div class="section-today">
                     <div class="today-header">
@@ -1082,40 +1067,6 @@
     </div>
 
     <script>
-        <script>
-  // Import Firebase and initialize the app
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
-
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyDjScDGllV4FCG_DaOSYAPNuHlefetV4eY",
-  authDomain: "joelle-baby-log.firebaseapp.com",
-  databaseURL: "https://joelle-baby-log-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "joelle-baby-log",
-  storageBucket: "joelle-baby-log.firebasestorage.app",
-  messagingSenderId: "457985795809",
-  appId: "1:457985795809:web:d88b5f85c8644ae089b9a0",
-  measurementId: "G-JVYT0998EN"
-};
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const database = getDatabase(app);
-
-  // Example: Writing data to the database
-  set(ref(database, 'examplePath'), {
-    name: "GitHub Web Page",
-    description: "This is an example entry from a GitHub-hosted webpage!"
-  });
-
-  // Example: Reading data from the database
-  const dataRef = ref(database, 'examplePath');
-  onValue(dataRef, (snapshot) => {
-    const data = snapshot.val();
-    console.log(data);
-  });
-</script>
         const JOELLE_BIRTHDAY = '2025-01-12';
         let currentEntryType = 'wake';
         let currentWakeOrSleep = 'wake';
@@ -1123,21 +1074,85 @@ const firebaseConfig = {
         let currentMlAmount = 0;
         let currentMood = 'happy';
 
+        const firebaseConfig = {
+          apiKey: "AIzaSyDjScDGllV4FCG_DaOSYAPNuHlefetV4eY",
+          authDomain: "joelle-baby-log.firebaseapp.com",
+          databaseURL: "https://joelle-baby-log-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "joelle-baby-log",
+          storageBucket: "joelle-baby-log.firebasestorage.app",
+          messagingSenderId: "457985795809",
+          appId: "1:457985795809:web:d88b5f85c8644ae089b9a0"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const logsRef = database.ref('logs');
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAgeDisplay();
+            updateDateDisplay();
+            setCurrentTime();
+            loadLogsFromFirebase();
+            updateStats();
+            monitorConnection();
+            setInterval(updateAgeDisplay, 24 * 60 * 60 * 1000);
+        });
+
+        function monitorConnection() {
+            const connectedRef = database.ref('.info/connected');
+            connectedRef.on('value', snap => {
+                const status = document.getElementById('syncStatus');
+                if (snap.val() === true) {
+                    status.textContent = '🟢 Synced';
+                    status.classList.remove('offline');
+                } else {
+                    status.textContent = '🔴 Offline';
+                    status.classList.add('offline');
+                }
+            });
+        }
+
+        function addLogToFirebase(logEntry) {
+            const newLogRef = logsRef.push();
+            newLogRef.set({
+                ...logEntry,
+                id: newLogRef.key,
+                addedAt: new Date().toISOString()
+            }).catch(error => {
+                console.error('Firebase write error:', error);
+                alert('❌ Failed to save. Check connection.');
+            });
+        }
+
+        function loadLogsFromFirebase() {
+            logsRef.on('value', snapshot => {
+                if (snapshot.exists()) {
+                    const allLogs = [];
+                    snapshot.forEach(childSnapshot => {
+                        allLogs.push(childSnapshot.val());
+                    });
+                    displayLogs(allLogs);
+                    updateStats(allLogs);
+                } else {
+                    displayLogs([]);
+                    updateStats([]);
+                }
+            });
+        }
+
+        function deleteLogFromFirebase(id) {
+            logsRef.child(id).remove().catch(error => {
+                console.error('Firebase delete error:', error);
+                alert('❌ Failed to delete');
+            });
+        }
+
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(tabName + '-tab').classList.add('active');
             event.target.classList.add('active');
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            updateAgeDisplay();
-            updateDateDisplay();
-            setCurrentTime();
-            displayLogs();
-            updateStats();
-            setInterval(updateAgeDisplay, 24 * 60 * 60 * 1000);
-        });
 
         function updateAgeDisplay() {
             const [year, month, day] = JOELLE_BIRTHDAY.split('-').map(Number);
@@ -1276,7 +1291,6 @@ const firebaseConfig = {
         function addLog() {
             const btn = document.getElementById('addLogBtn');
             let logEntry = {
-                id: Date.now(),
                 date: new Date().toISOString().split('T')[0],
                 type: currentEntryType,
             };
@@ -1312,7 +1326,7 @@ const firebaseConfig = {
                     const dt = document.getElementById('diaperTime').value;
                     if (!dt) { alert('Please enter a time'); return; }
                     logEntry.time = dt;
-                    logEntry.type_diaper = document.getElementById('diaperType').value;
+                    logEntry.typeDiaper = document.getElementById('diaperType').value;
                     logEntry.consistency = document.getElementById('diaperConsistency').value;
                     logEntry.notes = document.getElementById('diaperNotes').value;
                     break;
@@ -1336,11 +1350,8 @@ const firebaseConfig = {
                     break;
             }
 
-            let logs = JSON.parse(localStorage.getItem('joelleLogs') || '[]');
-            logs.push(logEntry);
-            localStorage.setItem('joelleLogs', JSON.stringify(logs));
+            addLogToFirebase(logEntry);
             
-            // Show logged feedback
             btn.textContent = '✅ Logged!';
             btn.classList.add('logged');
             btn.disabled = true;
@@ -1352,8 +1363,6 @@ const firebaseConfig = {
             }, 2000);
             
             clearForm();
-            displayLogs();
-            updateStats();
         }
 
         function clearForm() {
@@ -1386,23 +1395,18 @@ const firebaseConfig = {
 
         function deleteLog(id) {
             if (confirm('Delete this entry?')) {
-                let logs = JSON.parse(localStorage.getItem('joelleLogs') || '[]');
-                logs = logs.filter(log => log.id !== id);
-                localStorage.setItem('joelleLogs', JSON.stringify(logs));
-                displayLogs();
-                updateStats();
+                deleteLogFromFirebase(id);
             }
         }
 
-        function displayLogs() {
-            displayTodayLogs();
-            displayDetailedLogs();
+        function displayLogs(allLogs = []) {
+            displayTodayLogs(allLogs);
+            displayDetailedLogs(allLogs);
         }
 
-        function displayTodayLogs() {
-            const logs = JSON.parse(localStorage.getItem('joelleLogs') || '[]');
+        function displayTodayLogs(allLogs = []) {
             const today = new Date().toISOString().split('T')[0];
-            const todayLogs = logs.filter(log => log.date === today).sort((a, b) => a.time.localeCompare(b.time));
+            const todayLogs = allLogs.filter(log => log.date === today).sort((a, b) => a.time.localeCompare(b.time));
             
             let html = '';
             if (todayLogs.length === 0) {
@@ -1415,7 +1419,7 @@ const firebaseConfig = {
                             <div class="log-type">${getLogTypeLabel(log)}</div>
                             <div class="log-details">${getLogDetails(log)}</div>
                         </div>
-                        <button class="btn-delete" onclick="deleteLog(${log.id})">🗑️</button>
+                        <button class="btn-delete" onclick="deleteLog('${log.id}')">🗑️</button>
                     </div>`;
                 });
             }
@@ -1424,10 +1428,9 @@ const firebaseConfig = {
             document.getElementById('todayLogsContainer2').innerHTML = html;
         }
 
-        function displayDetailedLogs() {
-            const logs = JSON.parse(localStorage.getItem('joelleLogs') || '[]');
+        function displayDetailedLogs(allLogs = []) {
             const grouped = {};
-            logs.forEach(log => {
+            allLogs.forEach(log => {
                 if (!grouped[log.date]) grouped[log.date] = [];
                 grouped[log.date].push(log);
             });
@@ -1450,7 +1453,7 @@ const firebaseConfig = {
                                 <div class="log-type">${getLogTypeLabel(log)}</div>
                                 <div class="log-details">${getLogDetails(log)}</div>
                             </div>
-                            <button class="btn-delete" onclick="deleteLog(${log.id})">🗑️</button>
+                            <button class="btn-delete" onclick="deleteLog('${log.id}')">🗑️</button>
                         </div>`;
                     });
                     html += `</div></div>`;
@@ -1466,7 +1469,9 @@ const firebaseConfig = {
                 case 'wake': return log.wakeOrSleep === 'wake' ? '⏰ Wake Up' : '😴 Sleep';
                 case 'formula': return log.ml > 0 ? `🍼 Formula (${log.ml}ml)` : '🍼 Formula';
                 case 'meal': return `🍽️ ${log.mealType?.charAt(0).toUpperCase() + log.mealType?.slice(1) || 'Meal'}`;
-                case 'diaper': return '👶 Diaper';
+                case 'diaper': 
+                    const diaperLabels = { wee: 'Wee', poo: 'Poo', both: 'Both' };
+                    return `👶 Diaper (${diaperLabels[log.typeDiaper] || 'Unknown'})`;
                 case 'nap': return '😴 Nap';
                 case 'special':
                     if (log.condition === 'mood') {
@@ -1494,8 +1499,8 @@ const firebaseConfig = {
                     return details;
                 case 'diaper':
                     const labels = ['Very Hard', 'Hard', 'Normal', 'Soft', 'Very Watery'];
-                    let d = log.type_diaper;
-                    if (log.type_diaper !== 'wee' && log.consistency) d += ` • ${labels[log.consistency-1]}`;
+                    let d = log.typeDiaper;
+                    if (log.typeDiaper !== 'wee' && log.consistency) d += ` • ${labels[log.consistency-1]}`;
                     if (log.notes) d += `<br>${log.notes}`;
                     return d;
                 case 'nap': return `${log.duration}min (${log.time}-${log.endTime})`;
@@ -1506,10 +1511,9 @@ const firebaseConfig = {
             }
         }
 
-        function updateStats() {
-            const logs = JSON.parse(localStorage.getItem('joelleLogs') || '[]');
+        function updateStats(allLogs = []) {
             const today = new Date().toISOString().split('T')[0];
-            const todayLogs = logs.filter(log => log.date === today);
+            const todayLogs = allLogs.filter(log => log.date === today);
             const stats = {
                 feedings: todayLogs.filter(log => log.type === 'formula').length,
                 meals: todayLogs.filter(log => log.type === 'meal').length,
@@ -1528,9 +1532,7 @@ const firebaseConfig = {
 
         function clearAllData() {
             if (confirm('Delete ALL log entries? Cannot undo!')) {
-                localStorage.removeItem('joelleLogs');
-                displayLogs();
-                updateStats();
+                logsRef.remove();
             }
         }
     </script>
