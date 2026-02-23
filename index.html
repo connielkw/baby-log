@@ -1068,7 +1068,30 @@
         const SUPABASE_URL = 'https://obwsdxribtoxgapfvwws.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9id3NkeHJpYnRveGdhcGZ2d3dzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDkzNjYsImV4cCI6MjA4NzQyNTM2Nn0.GqDChm1GAtEksENYvvpkkl9hLq7fG4ccfyC4VWxEyjA';
         // ======================================================
-
+// Field name mapping - convert camelCase to snake_case for database
+function normalizeLogEntry(logEntry) {
+    const normalized = {
+        date: logEntry.date,
+        time: logEntry.time,
+        type: logEntry.type,
+    };
+    
+    if (logEntry.wakeOrSleep) normalized.wake_or_sleep = logEntry.wakeOrSleep;
+    if (logEntry.ml) normalized.ml = logEntry.ml;
+    if (logEntry.mealType) normalized.meal_type = logEntry.mealType;
+    if (logEntry.description) normalized.description = logEntry.description;
+    if (logEntry.nutrition) normalized.nutrition = logEntry.nutrition;
+    if (logEntry.typeDiaper) normalized.type_diaper = logEntry.typeDiaper;
+    if (logEntry.consistency) normalized.consistency = logEntry.consistency;
+    if (logEntry.notes) normalized.notes = logEntry.notes;
+    if (logEntry.endTime) normalized.end_time = logEntry.endTime;
+    if (logEntry.duration) normalized.duration = logEntry.duration;
+    if (logEntry.condition) normalized.condition = logEntry.condition;
+    if (logEntry.mood) normalized.mood = logEntry.mood;
+    if (logEntry.details) normalized.details = logEntry.details;
+    
+    return normalized;
+}
         const JOELLE_BIRTHDAY = '2025-01-12';
         let currentEntryType = 'wake';
         let currentWakeOrSleep = 'wake';
@@ -1103,39 +1126,37 @@
             }
         }
 
-        async function addLogToSupabase(logEntry) {
-            try {
-                console.log('Sending to Supabase:', logEntry);
-                
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/logs`, {
-                    method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=minimal'
-                    },
-                    body: JSON.stringify(logEntry)
-                });
-                
-                console.log('Response status:', response.status);
-                const responseText = await response.text();
-                console.log('Response text:', responseText);
-                
-                if (response.ok) {
-                    loadLogsFromSupabase();
-                    updateSyncStatus(true);
-                } else {
-                    console.error('Full error response:', responseText);
-                    throw new Error(`Server error: ${response.status} - ${responseText}`);
-                }
-            } catch (error) {
-                console.error('Error adding log:', error);
-                updateSyncStatus(false);
-                alert(`Failed to save log:\n${error.message}`);
-            }
+    async function addLogToSupabase(logEntry) {
+    try {
+        console.log('Adding log:', logEntry);
+        const normalizedEntry = normalizeLogEntry(logEntry);
+        console.log('Normalized entry:', normalizedEntry);
+        
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/logs`, {
+            method: 'POST',
+            headers: {
+                'apikey': SUPABASE_KEY,
+                'Authorization': `Bearer ${SUPABASE_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify(normalizedEntry)
+        });
+        
+        if (response.ok) {
+            console.log('Log added successfully');
+            loadLogsFromSupabase();
+            updateSyncStatus(true);
+        } else {
+            const error = await response.text();
+            throw new Error(`Server error: ${response.status} - ${error}`);
         }
-
+    } catch (error) {
+        console.error('Error adding log:', error);
+        updateSyncStatus(false);
+        alert(`Failed to save: ${error.message}`);
+    }
+}
         async function deleteLogFromSupabase(id) {
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/logs?id=eq.${id}`, {
