@@ -1065,8 +1065,8 @@
 
     <script>
         // ====== SUPABASE CONFIG - EDIT THESE TWO LINES ======
-        const SUPABASE_URL = 'https://obwsdxribtoxgapfvwws.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9id3NkeHJpYnRveGdhcGZ2d3dzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDkzNjYsImV4cCI6MjA4NzQyNTM2Nn0.GqDChm1GAtEksENYvvpkkl9hLq7fG4ccfyC4VWxEyjA';
+        const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
+        const SUPABASE_KEY = 'YOUR_ANON_PUBLIC_KEY';
         // ======================================================
 
         const JOELLE_BIRTHDAY = '2025-01-12';
@@ -1105,6 +1105,8 @@
 
         async function addLogToSupabase(logEntry) {
             try {
+                console.log('Sending to Supabase:', logEntry);
+                
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/logs`, {
                     method: 'POST',
                     headers: {
@@ -1116,16 +1118,21 @@
                     body: JSON.stringify(logEntry)
                 });
                 
+                console.log('Response status:', response.status);
+                const responseText = await response.text();
+                console.log('Response text:', responseText);
+                
                 if (response.ok) {
                     loadLogsFromSupabase();
                     updateSyncStatus(true);
                 } else {
-                    throw new Error('Failed to add log');
+                    console.error('Full error response:', responseText);
+                    throw new Error(`Server error: ${response.status} - ${responseText}`);
                 }
             } catch (error) {
                 console.error('Error adding log:', error);
                 updateSyncStatus(false);
-                alert('Failed to save log. Check your API keys.');
+                alert(`Failed to save log:\n${error.message}`);
             }
         }
 
@@ -1320,14 +1327,15 @@
                     const ft = document.getElementById('formulaTime').value;
                     if (!ft) { alert('Please enter a time'); return; }
                     logEntry.time = ft;
-                    logEntry.ml = currentMlAmount;
+                    if (currentMlAmount > 0) logEntry.ml = currentMlAmount;
                     break;
                 case 'meal':
                     const mt = document.getElementById('mealTime').value;
                     if (!mt) { alert('Please enter a time'); return; }
                     logEntry.time = mt;
                     logEntry.mealType = currentMealType;
-                    logEntry.description = document.getElementById('mealDescription').value || '(no details)';
+                    const mealDesc = document.getElementById('mealDescription').value;
+                    if (mealDesc) logEntry.description = mealDesc;
                     if (currentMealType === 'lunch' || currentMealType === 'dinner') {
                         logEntry.nutrition = JSON.stringify({
                             protein: document.getElementById('hasProtein').checked,
@@ -1341,15 +1349,20 @@
                     if (!dt) { alert('Please enter a time'); return; }
                     logEntry.time = dt;
                     logEntry.typeDiaper = document.getElementById('diaperType').value;
-                    logEntry.consistency = document.getElementById('diaperConsistency').value;
-                    logEntry.notes = document.getElementById('diaperNotes').value;
+                    if (document.getElementById('diaperType').value !== 'wee') {
+                        logEntry.consistency = document.getElementById('diaperConsistency').value;
+                    }
+                    const diaperNotes = document.getElementById('diaperNotes').value;
+                    if (diaperNotes) logEntry.notes = diaperNotes;
                     break;
                 case 'nap':
                     const ns = document.getElementById('napStartTime').value;
                     if (!ns) { alert('Please enter nap start time'); return; }
                     logEntry.time = ns;
-                    logEntry.endTime = document.getElementById('napEndTime').value || 'Not recorded';
-                    logEntry.duration = document.getElementById('napDuration').value || '—';
+                    const napEndTime = document.getElementById('napEndTime').value;
+                    if (napEndTime) logEntry.endTime = napEndTime;
+                    const napDur = document.getElementById('napDuration').value;
+                    if (napDur) logEntry.duration = napDur;
                     break;
                 case 'special':
                     const st = document.getElementById('specialTime').value;
@@ -1359,7 +1372,8 @@
                     if (logEntry.condition === 'mood') {
                         logEntry.mood = currentMood;
                     } else {
-                        logEntry.details = document.getElementById('specialNotes').value;
+                        const specialNotes = document.getElementById('specialNotes').value;
+                        if (specialNotes) logEntry.details = specialNotes;
                     }
                     break;
             }
@@ -1502,7 +1516,7 @@
                 case 'wake': return log.wakeOrSleep === 'wake' ? 'Woke up' : 'Went to sleep';
                 case 'formula': return log.ml > 0 ? `${log.ml}ml` : 'No amount recorded';
                 case 'meal':
-                    let details = log.description;
+                    let details = log.description || '';
                     if (log.nutrition) {
                         try {
                             const nutrition = JSON.parse(log.nutrition);
@@ -1510,17 +1524,17 @@
                             if (nutrition.protein) nutArray.push('🍗 Protein');
                             if (nutrition.carbs) nutArray.push('🍚 Carbs');
                             if (nutrition.veggie) nutArray.push('🥕 Veggies');
-                            if (nutArray.length > 0) details += `<br>${nutArray.join(' • ')}`;
+                            if (nutArray.length > 0) details += (details ? '<br>' : '') + nutArray.join(' • ');
                         } catch (e) {}
                     }
-                    return details;
+                    return details || '(no details)';
                 case 'diaper':
                     const labels = ['Very Hard', 'Hard', 'Normal', 'Soft', 'Very Watery'];
-                    let d = log.typeDiaper;
+                    let d = log.typeDiaper || '';
                     if (log.typeDiaper !== 'wee' && log.consistency) d += ` • ${labels[log.consistency-1]}`;
                     if (log.notes) d += `<br>${log.notes}`;
                     return d;
-                case 'nap': return `${log.duration}min (${log.time}-${log.endTime})`;
+                case 'nap': return `${log.duration || '?'}min (${log.time}-${log.endTime || '?'})`;
                 case 'special':
                     if (log.condition === 'mood') return `Mood: ${log.mood?.charAt(0).toUpperCase() + log.mood?.slice(1)}`;
                     return log.details || 'No details';
