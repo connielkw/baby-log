@@ -25,6 +25,88 @@
             position: fixed;
         }
 
+        /* LOGIN SCREEN STYLES */
+        .login-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 9999;
+        }
+
+        .login-screen.hidden {
+            display: none;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            width: 90%;
+            max-width: 350px;
+        }
+
+        .login-box h1 {
+            color: #764ba2;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .login-box p {
+            color: #999;
+            margin-bottom: 25px;
+            font-size: 0.95em;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .login-box input:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-box button:active {
+            transform: scale(0.95);
+        }
+
+        .login-error {
+            color: #ff6b6b;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .login-error.show {
+            display: block;
+        }
+
+        /* APP STYLES */
         .app {
             display: grid;
             grid-template-columns: 1fr;
@@ -43,12 +125,23 @@
             text-align: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         header h1 {
             color: #764ba2;
             font-size: 1.5em;
-            margin: 0 0 3px 0;
+            margin: 0;
+            flex: 1;
+        }
+
+        header .header-info {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            text-align: center;
         }
 
         header .age-info {
@@ -67,18 +160,35 @@
             color: #ff9800;
         }
 
+        .logout-btn {
+            background: #ff6b6b;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8em;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:active {
+            background: #ff5252;
+            transform: scale(0.95);
+        }
+
         .content-wrapper {
             display: flex;
             flex-direction: column;
             min-height: 0;
             overflow: hidden;
             flex: 1;
+            gap: 8px;
         }
 
         .tabs {
             display: flex;
             gap: 5px;
-            margin-bottom: 8px;
             flex-shrink: 0;
             background: white;
             padding: 8px;
@@ -116,6 +226,7 @@
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             min-height: 0;
+            border-radius: 10px;
         }
 
         .tab-content.active {
@@ -133,6 +244,7 @@
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             min-height: 0;
+            flex: 1;
         }
 
         .section-input h2 {
@@ -152,6 +264,7 @@
             flex-direction: column;
             overflow: hidden;
             min-height: 0;
+            flex: 1;
         }
 
         .section-today h3 {
@@ -276,6 +389,7 @@
             align-items: flex-start;
             gap: 8px;
             font-size: 0.85em;
+            flex-shrink: 0;
         }
 
         .log-entry.wake { border-left-color: #FF6B6B; }
@@ -349,6 +463,7 @@
 
         .form-group {
             margin-bottom: 10px;
+            flex-shrink: 0;
         }
 
         label {
@@ -435,6 +550,7 @@
 
         .conditional-field {
             display: none;
+            flex-shrink: 0;
         }
 
         .conditional-field.active {
@@ -446,6 +562,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 8px;
             margin-bottom: 10px;
+            flex-shrink: 0;
         }
 
         .wake-sleep-btn {
@@ -476,6 +593,7 @@
             border-radius: 6px;
             padding: 10px;
             margin-bottom: 10px;
+            flex-shrink: 0;
         }
 
         .ml-scroll-label {
@@ -563,6 +681,7 @@
             padding: 10px;
             border-radius: 6px;
             margin-bottom: 10px;
+            flex-shrink: 0;
         }
 
         .nutrition-checkboxes.active {
@@ -602,6 +721,7 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 5px;
             margin-bottom: 10px;
+            flex-shrink: 0;
         }
 
         .mood-btn {
@@ -644,6 +764,7 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 5px;
             margin-bottom: 10px;
+            flex-shrink: 0;
         }
 
         .meal-btn {
@@ -681,7 +802,7 @@
             grid-template-columns: 2fr 1fr;
             gap: 8px;
             margin-top: 10px;
-            margin-bottom: 0px;
+            margin-bottom: 10px;
             flex-shrink: 0;
         }
 
@@ -728,8 +849,6 @@
             padding: 10px;
             width: 100%;
             font-size: 0.85em;
-            margin-bottom: 0px;
-            margin-top: 8px;
             flex-shrink: 0;
         }
 
@@ -802,11 +921,26 @@
     </style>
 </head>
 <body>
+    <!-- LOGIN SCREEN -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <h1>👶 Joelle's Log</h1>
+            <p>Enter password to access</p>
+            <div class="login-error" id="loginError"></div>
+            <input type="password" id="passwordInput" placeholder="Password" autofocus>
+            <button onclick="handleLogin()">Login</button>
+        </div>
+    </div>
+
+    <!-- APP -->
     <div class="app">
         <header>
-            <h1>👶 Joelle's Log</h1>
-            <div class="age-info" id="ageInfo"></div>
-            <div class="sync-status" id="syncStatus">🟢 Synced</div>
+            <div class="header-info">
+                <h1>👶 Joelle's Log</h1>
+                <div class="age-info" id="ageInfo"></div>
+                <div class="sync-status" id="syncStatus">🟢 Synced</div>
+            </div>
+            <button class="logout-btn" onclick="handleLogout()">🔴 Logout</button>
         </header>
 
         <div class="content-wrapper">
@@ -1063,389 +1197,427 @@
         </div>
     </div>
 
- <script>
-    // ====== SUPABASE CONFIG ======
-    const SUPABASE_URL = 'https://obwsdxribtoxgapfvwws.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9id3NkeHJpYnRveGdhcGZ2d3dzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDkzNjYsImV4cCI6MjA4NzQyNTM2Nn0.GqDChm1GAtEksENYvvpkkl9hLq7fG4ccfyC4VWxEyjA';
-    // ==============================
-
-    const JOELLE_BIRTHDAY = '2025-01-12';
-    let currentEntryType = 'wake';
-    let currentWakeOrSleep = 'wake';
-    let currentMealType = 'breakfast';
-    let currentMlAmount = 0;
-    let currentMood = 'happy';
-
-    // Normalize field names from camelCase to snake_case
-    function normalizeLogEntry(logEntry) {
-        const normalized = {};
+    <script>
+        // ====== SUPABASE CONFIG ======
+        const SUPABASE_URL = 'https://obwsdxribtoxgapfvwws.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9id3NkeHJpYnRveGdhcGZ2d3dzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDkzNjYsImV4cCI6MjA4NzQyNTM2Nn0.GqDChm1GAtEksENYvvpkkl9hLq7fG4ccfyC4VWxEyjA';
         
-        if (logEntry.date) normalized.date = logEntry.date;
-        if (logEntry.time) normalized.time = logEntry.time;
-        if (logEntry.type) normalized.type = logEntry.type;
-        if (logEntry.wakeOrSleep) normalized.wake_or_sleep = logEntry.wakeOrSleep;
-        if (logEntry.ml !== undefined) normalized.ml = logEntry.ml;
-        if (logEntry.mealType) normalized.meal_type = logEntry.mealType;
-        if (logEntry.description) normalized.description = logEntry.description;
-        if (logEntry.nutrition) normalized.nutrition = logEntry.nutrition;
-        if (logEntry.typeDiaper) normalized.type_diaper = logEntry.typeDiaper;
-        if (logEntry.consistency) normalized.consistency = logEntry.consistency;
-        if (logEntry.notes) normalized.notes = logEntry.notes;
-        if (logEntry.endTime) normalized.end_time = logEntry.endTime;
-        if (logEntry.duration) normalized.duration = logEntry.duration;
-        if (logEntry.condition) normalized.condition = logEntry.condition;
-        if (logEntry.mood) normalized.mood = logEntry.mood;
-        if (logEntry.details) normalized.details = logEntry.details;
-        
-        return normalized;
-    }
+        // ======= PASSWORD SETUP =======
+        const CORRECT_PASSWORD = 'joelle2025'; // CHANGE THIS TO YOUR PASSWORD
+        // ==============================
 
-    window.addEventListener('DOMContentLoaded', function() {
-        console.log('App initializing...');
-        updateAgeDisplay();
-        updateDateDisplay();
-        setCurrentTime();
-        loadLogsFromSupabase();
-        updateStats();
-    });
+        const JOELLE_BIRTHDAY = '2025-01-12';
+        let currentEntryType = 'wake';
+        let currentWakeOrSleep = 'wake';
+        let currentMealType = 'breakfast';
+        let currentMlAmount = 0;
+        let currentMood = 'happy';
 
-    async function loadLogsFromSupabase() {
-        try {
-            const response = await fetch(`${SUPABASE_URL}/rest/v1/logs?order=created_at.desc`, {
-                headers: {
-                    'apikey': SUPABASE_KEY,
-                    'Authorization': `Bearer ${SUPABASE_KEY}`
-                }
-            });
-            const data = await response.json();
-            displayLogs(data || []);
-            updateStats(data || []);
-            updateSyncStatus(true);
-        } catch (error) {
-            console.error('Load error:', error);
-            updateSyncStatus(false);
-        }
-    }
+        // Check if already logged in
+        window.addEventListener('DOMContentLoaded', function() {
+            checkLogin();
+        });
 
-    async function addLogToSupabase(logEntry) {
-        try {
-            console.log('Original entry:', logEntry);
-            const normalized = normalizeLogEntry(logEntry);
-            console.log('Normalized entry:', normalized);
+        function checkLogin() {
+            const isLoggedIn = localStorage.getItem('babyLogLoggedIn') === 'true';
+            const loginScreen = document.getElementById('loginScreen');
+            const appContent = document.querySelector('.app');
             
-            const response = await fetch(`${SUPABASE_URL}/rest/v1/logs`, {
-                method: 'POST',
-                headers: {
-                    'apikey': SUPABASE_KEY,
-                    'Authorization': `Bearer ${SUPABASE_KEY}`,
-                    'Content-Type': 'application/json',
-                    'Prefer': 'return=minimal'
-                },
-                body: JSON.stringify(normalized)
-            });
-            
-            if (response.ok) {
-                console.log('✅ Log saved!');
-                loadLogsFromSupabase();
-                updateSyncStatus(true);
+            if (isLoggedIn) {
+                // Already logged in, show app
+                loginScreen.classList.add('hidden');
+                appContent.style.display = 'grid';
+                initializeApp();
             } else {
-                const error = await response.text();
-                console.error('Server error:', error);
-                throw new Error(error);
+                // Not logged in, show login screen
+                loginScreen.classList.remove('hidden');
+                appContent.style.display = 'none';
             }
-        } catch (error) {
-            console.error('❌ Error:', error);
-            updateSyncStatus(false);
-            alert('Failed to save log: ' + error.message);
         }
-    }
 
-    async function deleteLogFromSupabase(id) {
-        try {
-            const response = await fetch(`${SUPABASE_URL}/rest/v1/logs?id=eq.${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'apikey': SUPABASE_KEY,
-                    'Authorization': `Bearer ${SUPABASE_KEY}`
-                }
-            });
-            if (response.ok) loadLogsFromSupabase();
-        } catch (error) {
-            console.error('Delete error:', error);
+        function handleLogin() {
+            const passwordInput = document.getElementById('passwordInput');
+            const errorMsg = document.getElementById('loginError');
+            const password = passwordInput.value;
+
+            if (password === CORRECT_PASSWORD) {
+                // Save login to localStorage
+                localStorage.setItem('babyLogLoggedIn', 'true');
+                errorMsg.classList.remove('show');
+                passwordInput.value = '';
+                checkLogin();
+            } else {
+                // Wrong password
+                errorMsg.textContent = 'Wrong password. Try again.';
+                errorMsg.classList.add('show');
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
         }
-    }
 
-    function updateSyncStatus(online) {
-        const s = document.getElementById('syncStatus');
-        if (s) {
-            s.textContent = online ? '🟢 Synced' : '🔴 Offline';
-            s.classList.toggle('offline', !online);
+        function handleLogout() {
+            if (confirm('Log out and return to login screen?')) {
+                localStorage.removeItem('babyLogLoggedIn');
+                location.reload();
+            }
         }
-    }
 
-    function switchTab(name) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        const tab = document.getElementById(name + '-tab');
-        if (tab) tab.classList.add('active');
-        event.target.classList.add('active');
-    }
-
-    function updateAgeDisplay() {
-        const [y, m, d] = JOELLE_BIRTHDAY.split('-').map(Number);
-        const birth = new Date(Date.UTC(y, m - 1, d));
-        const today = new Date();
-        const todayUTC = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
-        const days = Math.floor((todayUTC - birth) / (1000 * 60 * 60 * 24));
-        const el = document.getElementById('ageInfo');
-        if (el) el.textContent = `Day ${days} 👼`;
-    }
-
-    function updateDateDisplay() {
-        const today = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-        ['dateDisplay', 'dateDisplay2'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.textContent = today;
+        // Allow Enter key to submit password
+        document.addEventListener('keypress', function(e) {
+            const passwordInput = document.getElementById('passwordInput');
+            if (passwordInput && e.key === 'Enter' && document.activeElement === passwordInput) {
+                handleLogin();
+            }
         });
-    }
 
-    function setCurrentTime() {
-        const now = new Date();
-        const time = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-        ['time', 'formulaTime', 'mealTime', 'diaperTime', 'napStartTime', 'specialTime'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.value = time;
-        });
-    }
-
-    function selectEntryType(type) {
-        currentEntryType = type;
-        document.querySelectorAll('.entry-btn').forEach(b => b.classList.remove('active'));
-        event.target.closest('.entry-btn')?.classList.add('active');
-        document.querySelectorAll('.conditional-field').forEach(f => f.classList.remove('active'));
-        const f = document.getElementById(type + '-fields');
-        if (f) f.classList.add('active');
-        if (type === 'diaper') updateDiaperFields();
-        if (type === 'special') updateSpecialFields();
-        if (type === 'meal') updateMealNutritionVisibility();
-    }
-
-    function selectWakeOrSleep(t) {
-        currentWakeOrSleep = t;
-        document.querySelectorAll('.wake-sleep-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
-    }
-
-    function selectMlAmount(ml) {
-        currentMlAmount = ml;
-        document.querySelectorAll('.ml-option').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
-        const d = document.getElementById('mlDisplay');
-        if (d) {
-            d.textContent = ml === 0 ? 'Not selected' : `${ml}ml selected`;
-            d.style.color = ml === 0 ? '#999' : '#667eea';
+        function initializeApp() {
+            console.log('App initializing...');
+            updateAgeDisplay();
+            updateDateDisplay();
+            setCurrentTime();
+            loadLogsFromSupabase();
+            updateStats();
         }
-    }
 
-    function selectCustomMl() {
-        const v = document.getElementById('customMl')?.value;
-        if (!v || v <= 0) { alert('Enter valid amount'); return; }
-        selectMlAmount(parseInt(v));
-    }
+        // Normalize field names from camelCase to snake_case
+        function normalizeLogEntry(logEntry) {
+            const normalized = {};
+            
+            if (logEntry.date) normalized.date = logEntry.date;
+            if (logEntry.time) normalized.time = logEntry.time;
+            if (logEntry.type) normalized.type = logEntry.type;
+            if (logEntry.wakeOrSleep) normalized.wake_or_sleep = logEntry.wakeOrSleep;
+            if (logEntry.ml !== undefined) normalized.ml = logEntry.ml;
+            if (logEntry.mealType) normalized.meal_type = logEntry.mealType;
+            if (logEntry.description) normalized.description = logEntry.description;
+            if (logEntry.nutrition) normalized.nutrition = logEntry.nutrition;
+            if (logEntry.typeDiaper) normalized.type_diaper = logEntry.typeDiaper;
+            if (logEntry.consistency) normalized.consistency = logEntry.consistency;
+            if (logEntry.notes) normalized.notes = logEntry.notes;
+            if (logEntry.endTime) normalized.end_time = logEntry.endTime;
+            if (logEntry.duration) normalized.duration = logEntry.duration;
+            if (logEntry.condition) normalized.condition = logEntry.condition;
+            if (logEntry.mood) normalized.mood = logEntry.mood;
+            if (logEntry.details) normalized.details = logEntry.details;
+            
+            return normalized;
+        }
 
-    function selectMealType(t) {
-        currentMealType = t;
-        document.querySelectorAll('.meal-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
-        updateMealNutritionVisibility();
-    }
-
-    function updateMealNutritionVisibility() {
-        const c = document.getElementById('nutrition-checkboxes');
-        if (c) {
-            c.classList.toggle('active', ['lunch', 'dinner'].includes(currentMealType));
-            if (!['lunch', 'dinner'].includes(currentMealType)) {
-                document.getElementById('hasProtein').checked = false;
-                document.getElementById('hasCarbs').checked = false;
-                document.getElementById('hasVeggie').checked = false;
+        async function loadLogsFromSupabase() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/logs?order=created_at.desc`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                const data = await response.json();
+                displayLogs(data || []);
+                updateStats(data || []);
+                updateSyncStatus(true);
+            } catch (error) {
+                console.error('Load error:', error);
+                updateSyncStatus(false);
             }
         }
-    }
 
-    function selectMood(m) {
-        currentMood = m;
-        document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
-    }
-
-    function updateDiaperFields() {
-        const f = document.getElementById('consistencyField');
-        if (f) f.style.display = document.getElementById('diaperType')?.value === 'wee' ? 'none' : 'block';
-    }
-
-    function updateSpecialFields() {
-        const t = document.getElementById('specialType')?.value;
-        const m = document.getElementById('mood-selector');
-        const n = document.getElementById('special-notes-field');
-        if (m) m.style.display = t === 'mood' ? 'block' : 'none';
-        if (n) n.style.display = t === 'mood' ? 'none' : 'block';
-    }
-
-    document.addEventListener('change', (e) => {
-        if (['napEndTime', 'napStartTime'].includes(e.target.id)) {
-            const s = document.getElementById('napStartTime')?.value;
-            const en = document.getElementById('napEndTime')?.value;
-            if (s && en) {
-                const [sh, sm] = s.split(':').map(Number);
-                const [eh, em] = en.split(':').map(Number);
-                let start = sh * 60 + sm, end = eh * 60 + em;
-                if (end < start) end += 24 * 60;
-                const d = document.getElementById('napDuration');
-                if (d) d.value = end - start;
-            }
-        }
-    });
-
-    function addLog() {
-        const btn = document.getElementById('addLogBtn');
-        let entry = { date: new Date().toISOString().split('T')[0], type: currentEntryType };
-
-        switch(currentEntryType) {
-            case 'wake':
-                const t = document.getElementById('time')?.value;
-                if (!t) { alert('Time required'); return; }
-                entry.time = t;
-                entry.wakeOrSleep = currentWakeOrSleep;
-                break;
-            case 'formula':
-                const ft = document.getElementById('formulaTime')?.value;
-                if (!ft) { alert('Time required'); return; }
-                entry.time = ft;
-                if (currentMlAmount > 0) entry.ml = currentMlAmount;
-                break;
-            case 'meal':
-                const mt = document.getElementById('mealTime')?.value;
-                if (!mt) { alert('Time required'); return; }
-                entry.time = mt;
-                entry.mealType = currentMealType;
-                const desc = document.getElementById('mealDescription')?.value;
-                if (desc) entry.description = desc;
-                if (['lunch', 'dinner'].includes(currentMealType)) {
-                    entry.nutrition = JSON.stringify({
-                        protein: document.getElementById('hasProtein')?.checked,
-                        carbs: document.getElementById('hasCarbs')?.checked,
-                        veggie: document.getElementById('hasVeggie')?.checked
-                    });
-                }
-                break;
-            case 'diaper':
-                const dt = document.getElementById('diaperTime')?.value;
-                if (!dt) { alert('Time required'); return; }
-                entry.time = dt;
-                entry.typeDiaper = document.getElementById('diaperType')?.value;
-                if (entry.typeDiaper !== 'wee') {
-                    entry.consistency = document.getElementById('diaperConsistency')?.value;
-                }
-                const dn = document.getElementById('diaperNotes')?.value;
-                if (dn) entry.notes = dn;
-                break;
-            case 'nap':
-                const ns = document.getElementById('napStartTime')?.value;
-                if (!ns) { alert('Start time required'); return; }
-                entry.time = ns;
-                const ne = document.getElementById('napEndTime')?.value;
-                if (ne) entry.endTime = ne;
-                const nd = document.getElementById('napDuration')?.value;
-                if (nd) entry.duration = nd;
-                break;
-            case 'special':
-                const st = document.getElementById('specialTime')?.value;
-                if (!st) { alert('Time required'); return; }
-                entry.time = st;
-                entry.condition = document.getElementById('specialType')?.value;
-                if (entry.condition === 'mood') {
-                    entry.mood = currentMood;
+        async function addLogToSupabase(logEntry) {
+            try {
+                console.log('Original entry:', logEntry);
+                const normalized = normalizeLogEntry(logEntry);
+                console.log('Normalized entry:', normalized);
+                
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/logs`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(normalized)
+                });
+                
+                if (response.ok) {
+                    console.log('✅ Log saved!');
+                    loadLogsFromSupabase();
+                    updateSyncStatus(true);
                 } else {
-                    const sn = document.getElementById('specialNotes')?.value;
-                    if (sn) entry.details = sn;
+                    const error = await response.text();
+                    console.error('Server error:', error);
+                    throw new Error(error);
                 }
+            } catch (error) {
+                console.error('❌ Error:', error);
+                updateSyncStatus(false);
+                alert('Failed to save log: ' + error.message);
+            }
         }
 
-        addLogToSupabase(entry);
-        btn.textContent = '✅ Logged!';
-        btn.classList.add('logged');
-        btn.disabled = true;
-        setTimeout(() => {
-            btn.textContent = '✅ Add Log';
-            btn.classList.remove('logged');
-            btn.disabled = false;
-        }, 2000);
-        clearForm();
-    }
+        async function deleteLogFromSupabase(id) {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/logs?id=eq.${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                if (response.ok) loadLogsFromSupabase();
+            } catch (error) {
+                console.error('Delete error:', error);
+            }
+        }
 
-    function clearForm() {
-        selectEntryType('wake');
-        setCurrentTime();
-        currentMlAmount = 0;
-        document.getElementById('mlDisplay').textContent = 'Not selected';
-        document.querySelectorAll('.ml-option').forEach(b => b.classList.remove('active'));
-        document.getElementById('customMl').value = '';
-        document.getElementById('mealDescription').value = '';
-        currentMealType = 'breakfast';
-        document.querySelectorAll('.meal-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
-        document.getElementById('hasProtein').checked = false;
-        document.getElementById('hasCarbs').checked = false;
-        document.getElementById('hasVeggie').checked = false;
-        document.getElementById('diaperType').value = 'wee';
-        document.getElementById('diaperConsistency').value = '3';
-        document.getElementById('diaperNotes').value = '';
-        document.getElementById('napStartTime').value = '';
-        document.getElementById('napEndTime').value = '';
-        document.getElementById('napDuration').value = '';
-        document.getElementById('specialType').value = 'mood';
-        document.getElementById('specialNotes').value = '';
-        currentMood = 'happy';
-        document.querySelectorAll('.mood-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
-        updateMealNutritionVisibility();
-        updateSpecialFields();
-    }
+        function updateSyncStatus(online) {
+            const s = document.getElementById('syncStatus');
+            if (s) {
+                s.textContent = online ? '🟢 Synced' : '🔴 Offline';
+                s.classList.toggle('offline', !online);
+            }
+        }
 
-    function deleteLog(id) {
-        if (confirm('Delete?')) deleteLogFromSupabase(id);
-    }
+        function switchTab(name) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            const tab = document.getElementById(name + '-tab');
+            if (tab) tab.classList.add('active');
+            event.target.classList.add('active');
+        }
 
-    function displayLogs(logs) {
-        displayTodayLogs(logs);
-        displayDetailedLogs(logs);
-    }
+        function updateAgeDisplay() {
+            const [y, m, d] = JOELLE_BIRTHDAY.split('-').map(Number);
+            const birth = new Date(Date.UTC(y, m - 1, d));
+            const today = new Date();
+            const todayUTC = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+            const days = Math.floor((todayUTC - birth) / (1000 * 60 * 60 * 24));
+            const el = document.getElementById('ageInfo');
+            if (el) el.textContent = `Day ${days} 👼`;
+        }
 
-    function displayTodayLogs(logs) {
-        const today = new Date().toISOString().split('T')[0];
-        const t = logs.filter(l => l.date === today).sort((a, b) => a.time.localeCompare(b.time));
-        let html = t.length === 0 ? '<div class="empty-state">No logs today</div>' : '';
-        t.forEach(l => {
-            html += `<div class="log-entry ${l.type}">
-                <div class="log-content">
-                    <div class="log-time">${l.time}</div>
-                    <div class="log-type">${getLogLabel(l)}</div>
-                    <div class="log-details">${getLogDetail(l)}</div>
-                </div>
-                <button class="btn-delete" onclick="deleteLog(${l.id})">🗑️</button>
-            </div>`;
+        function updateDateDisplay() {
+            const today = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            ['dateDisplay', 'dateDisplay2'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = today;
+            });
+        }
+
+        function setCurrentTime() {
+            const now = new Date();
+            const time = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+            ['time', 'formulaTime', 'mealTime', 'diaperTime', 'napStartTime', 'specialTime'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = time;
+            });
+        }
+
+        function selectEntryType(type) {
+            currentEntryType = type;
+            document.querySelectorAll('.entry-btn').forEach(b => b.classList.remove('active'));
+            event.target.closest('.entry-btn')?.classList.add('active');
+            document.querySelectorAll('.conditional-field').forEach(f => f.classList.remove('active'));
+            const f = document.getElementById(type + '-fields');
+            if (f) f.classList.add('active');
+            if (type === 'diaper') updateDiaperFields();
+            if (type === 'special') updateSpecialFields();
+            if (type === 'meal') updateMealNutritionVisibility();
+        }
+
+        function selectWakeOrSleep(t) {
+            currentWakeOrSleep = t;
+            document.querySelectorAll('.wake-sleep-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function selectMlAmount(ml) {
+            currentMlAmount = ml;
+            document.querySelectorAll('.ml-option').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            const d = document.getElementById('mlDisplay');
+            if (d) {
+                d.textContent = ml === 0 ? 'Not selected' : `${ml}ml selected`;
+                d.style.color = ml === 0 ? '#999' : '#667eea';
+            }
+        }
+
+        function selectCustomMl() {
+            const v = document.getElementById('customMl')?.value;
+            if (!v || v <= 0) { alert('Enter valid amount'); return; }
+            selectMlAmount(parseInt(v));
+        }
+
+        function selectMealType(t) {
+            currentMealType = t;
+            document.querySelectorAll('.meal-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            updateMealNutritionVisibility();
+        }
+
+        function updateMealNutritionVisibility() {
+            const c = document.getElementById('nutrition-checkboxes');
+            if (c) {
+                c.classList.toggle('active', ['lunch', 'dinner'].includes(currentMealType));
+                if (!['lunch', 'dinner'].includes(currentMealType)) {
+                    document.getElementById('hasProtein').checked = false;
+                    document.getElementById('hasCarbs').checked = false;
+                    document.getElementById('hasVeggie').checked = false;
+                }
+            }
+        }
+
+        function selectMood(m) {
+            currentMood = m;
+            document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function updateDiaperFields() {
+            const f = document.getElementById('consistencyField');
+            if (f) f.style.display = document.getElementById('diaperType')?.value === 'wee' ? 'none' : 'block';
+        }
+
+        function updateSpecialFields() {
+            const t = document.getElementById('specialType')?.value;
+            const m = document.getElementById('mood-selector');
+            const n = document.getElementById('special-notes-field');
+            if (m) m.style.display = t === 'mood' ? 'block' : 'none';
+            if (n) n.style.display = t === 'mood' ? 'none' : 'block';
+        }
+
+        document.addEventListener('change', (e) => {
+            if (['napEndTime', 'napStartTime'].includes(e.target.id)) {
+                const s = document.getElementById('napStartTime')?.value;
+                const en = document.getElementById('napEndTime')?.value;
+                if (s && en) {
+                    const [sh, sm] = s.split(':').map(Number);
+                    const [eh, em] = en.split(':').map(Number);
+                    let start = sh * 60 + sm, end = eh * 60 + em;
+                    if (end < start) end += 24 * 60;
+                    const d = document.getElementById('napDuration');
+                    if (d) d.value = end - start;
+                }
+            }
         });
-        document.getElementById('todayLogsContainer').innerHTML = html;
-        document.getElementById('todayLogsContainer2').innerHTML = html;
-    }
 
-    function displayDetailedLogs(logs) {
-        const g = {};
-        logs.forEach(l => { if (!g[l.date]) g[l.date] = []; g[l.date].push(l); });
-        let html = Object.keys(g).length === 0 ? '<div class="empty-state">No records</div>' : '';
-        Object.keys(g).sort().reverse().forEach(d => {
-            const dayLogs = g[d].sort((a, b) => a.time.localeCompare(b.time));
-            const dayName = new Date(d + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-            html += `<div class="day-block"><div class="day-header">${dayName}</div><div class="day-logs">`;
-            dayLogs.forEach(l => {
+        function addLog() {
+            const btn = document.getElementById('addLogBtn');
+            let entry = { date: new Date().toISOString().split('T')[0], type: currentEntryType };
+
+            switch(currentEntryType) {
+                case 'wake':
+                    const t = document.getElementById('time')?.value;
+                    if (!t) { alert('Time required'); return; }
+                    entry.time = t;
+                    entry.wakeOrSleep = currentWakeOrSleep;
+                    break;
+                case 'formula':
+                    const ft = document.getElementById('formulaTime')?.value;
+                    if (!ft) { alert('Time required'); return; }
+                    entry.time = ft;
+                    if (currentMlAmount > 0) entry.ml = currentMlAmount;
+                    break;
+                case 'meal':
+                    const mt = document.getElementById('mealTime')?.value;
+                    if (!mt) { alert('Time required'); return; }
+                    entry.time = mt;
+                    entry.mealType = currentMealType;
+                    const desc = document.getElementById('mealDescription')?.value;
+                    if (desc) entry.description = desc;
+                    if (['lunch', 'dinner'].includes(currentMealType)) {
+                        entry.nutrition = JSON.stringify({
+                            protein: document.getElementById('hasProtein')?.checked,
+                            carbs: document.getElementById('hasCarbs')?.checked,
+                            veggie: document.getElementById('hasVeggie')?.checked
+                        });
+                    }
+                    break;
+                case 'diaper':
+                    const dt = document.getElementById('diaperTime')?.value;
+                    if (!dt) { alert('Time required'); return; }
+                    entry.time = dt;
+                    entry.typeDiaper = document.getElementById('diaperType')?.value;
+                    if (entry.typeDiaper !== 'wee') {
+                        entry.consistency = document.getElementById('diaperConsistency')?.value;
+                    }
+                    const dn = document.getElementById('diaperNotes')?.value;
+                    if (dn) entry.notes = dn;
+                    break;
+                case 'nap':
+                    const ns = document.getElementById('napStartTime')?.value;
+                    if (!ns) { alert('Start time required'); return; }
+                    entry.time = ns;
+                    const ne = document.getElementById('napEndTime')?.value;
+                    if (ne) entry.endTime = ne;
+                    const nd = document.getElementById('napDuration')?.value;
+                    if (nd) entry.duration = nd;
+                    break;
+                case 'special':
+                    const st = document.getElementById('specialTime')?.value;
+                    if (!st) { alert('Time required'); return; }
+                    entry.time = st;
+                    entry.condition = document.getElementById('specialType')?.value;
+                    if (entry.condition === 'mood') {
+                        entry.mood = currentMood;
+                    } else {
+                        const sn = document.getElementById('specialNotes')?.value;
+                        if (sn) entry.details = sn;
+                    }
+            }
+
+            addLogToSupabase(entry);
+            btn.textContent = '✅ Logged!';
+            btn.classList.add('logged');
+            btn.disabled = true;
+            setTimeout(() => {
+                btn.textContent = '✅ Add Log';
+                btn.classList.remove('logged');
+                btn.disabled = false;
+            }, 2000);
+            clearForm();
+        }
+
+        function clearForm() {
+            selectEntryType('wake');
+            setCurrentTime();
+            currentMlAmount = 0;
+            document.getElementById('mlDisplay').textContent = 'Not selected';
+            document.querySelectorAll('.ml-option').forEach(b => b.classList.remove('active'));
+            document.getElementById('customMl').value = '';
+            document.getElementById('mealDescription').value = '';
+            currentMealType = 'breakfast';
+            document.querySelectorAll('.meal-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+            document.getElementById('hasProtein').checked = false;
+            document.getElementById('hasCarbs').checked = false;
+            document.getElementById('hasVeggie').checked = false;
+            document.getElementById('diaperType').value = 'wee';
+            document.getElementById('diaperConsistency').value = '3';
+            document.getElementById('diaperNotes').value = '';
+            document.getElementById('napStartTime').value = '';
+            document.getElementById('napEndTime').value = '';
+            document.getElementById('napDuration').value = '';
+            document.getElementById('specialType').value = 'mood';
+            document.getElementById('specialNotes').value = '';
+            currentMood = 'happy';
+            document.querySelectorAll('.mood-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+            updateMealNutritionVisibility();
+            updateSpecialFields();
+        }
+
+        function deleteLog(id) {
+            if (confirm('Delete?')) deleteLogFromSupabase(id);
+        }
+
+        function displayLogs(logs) {
+            displayTodayLogs(logs);
+            displayDetailedLogs(logs);
+        }
+
+        function displayTodayLogs(logs) {
+            const today = new Date().toISOString().split('T')[0];
+            const t = logs.filter(l => l.date === today).sort((a, b) => a.time.localeCompare(b.time));
+            let html = t.length === 0 ? '<div class="empty-state">No logs today</div>' : '';
+            t.forEach(l => {
                 html += `<div class="log-entry ${l.type}">
                     <div class="log-content">
                         <div class="log-time">${l.time}</div>
@@ -1455,72 +1627,14 @@
                     <button class="btn-delete" onclick="deleteLog(${l.id})">🗑️</button>
                 </div>`;
             });
-            html += `</div></div>`;
-        });
-        document.getElementById('detailedLogsContainer').innerHTML = html;
-        document.getElementById('detailedLogsContainer2').innerHTML = html;
-    }
-
-    function getLogLabel(l) {
-        switch(l.type) {
-            case 'wake': return l.wake_or_sleep === 'wake' ? '⏰ Wake Up' : '😴 Sleep';
-            case 'formula': return l.ml ? `🍼 Formula (${l.ml}ml)` : '🍼 Formula';
-            case 'meal': return `🍽️ ${l.meal_type?.charAt(0).toUpperCase() + l.meal_type?.slice(1) || 'Meal'}`;
-            case 'diaper': return `👶 Diaper (${l.type_diaper || 'Unknown'})`;
-            case 'nap': return '😴 Nap';
-            case 'special': return l.condition === 'mood' ? `${l.mood === 'happy' ? '😊' : l.mood === 'sleepy' ? '😴' : '😠'} ${l.mood}` : `⚠️ ${l.condition}`;
-            default: return l.type;
+            document.getElementById('todayLogsContainer').innerHTML = html;
+            document.getElementById('todayLogsContainer2').innerHTML = html;
         }
-    }
 
-    function getLogDetail(l) {
-        switch(l.type) {
-            case 'wake': return l.wake_or_sleep === 'wake' ? 'Woke up' : 'Went to sleep';
-            case 'formula': return l.ml ? `${l.ml}ml` : 'No amount';
-            case 'meal': 
-                let d = l.description || '';
-                if (l.nutrition) try {
-                    const n = JSON.parse(l.nutrition);
-                    const a = [];
-                    if (n.protein) a.push('🍗 Protein');
-                    if (n.carbs) a.push('🍚 Carbs');
-                    if (n.veggie) a.push('🥕 Veggies');
-                    if (a.length) d += (d ? '<br>' : '') + a.join(' • ');
-                } catch (e) {}
-                return d || '(no details)';
-            case 'diaper': 
-                let di = l.type_diaper || '';
-                if (l.type_diaper !== 'wee' && l.consistency) di += ` • ${['Very Hard', 'Hard', 'Normal', 'Soft', 'Very Watery'][l.consistency-1]}`;
-                if (l.notes) di += `<br>${l.notes}`;
-                return di;
-            case 'nap': return `${l.duration || '?'}min (${l.time}-${l.end_time || '?'})`;
-            case 'special': return l.condition === 'mood' ? `Mood: ${l.mood}` : l.details || 'No details';
-            default: return '';
-        }
-    }
-
-    function updateStats(logs) {
-        const today = new Date().toISOString().split('T')[0];
-        const t = logs.filter(l => l.date === today);
-        const s = {
-            feedings: t.filter(l => l.type === 'formula').length,
-            meals: t.filter(l => l.type === 'meal').length,
-            diapers: t.filter(l => l.type === 'diaper').length,
-            naps: t.filter(l => l.type === 'nap').length
-        };
-        const html = `
-            <div class="stat-card"><div class="stat-number">${s.feedings}</div><div class="stat-label">Feedings</div></div>
-            <div class="stat-card"><div class="stat-number">${s.meals}</div><div class="stat-label">Meals</div></div>
-            <div class="stat-card"><div class="stat-number">${s.diapers}</div><div class="stat-label">Diapers</div></div>
-            <div class="stat-card"><div class="stat-number">${s.naps}</div><div class="stat-label">Naps</div></div>
-        `;
-        document.getElementById('statsContainer').innerHTML = html;
-        document.getElementById('statsContainer2').innerHTML = html;
-    }
-
-    function clearAllData() {
-        if (confirm('Delete ALL logs?')) alert('Delete entries individually for now.');
-    }
-</script>
-</body>
-</html>
+        function displayDetailedLogs(logs) {
+            const g = {};
+            logs.forEach(l => { if (!g[l.date]) g[l.date] = []; g[l.date].push(l); });
+            let html = Object.keys(g).length === 0 ? '<div class="empty-state">No records</div>' : '';
+            Object.keys(g).sort().reverse().forEach(d => {
+                const dayLogs = g[d].sort((a, b) => a.time.localeCompare(b.time));
+                const dayName = new Date(d + 'T00:00:00').toLocaleDateString('en-US', { weekday: 
