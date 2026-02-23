@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Joelle's Baby Schedule Log</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .app {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto 1fr;
+            height: 100vh;
+            gap: 8px;
+            padding: 8px;
+            overflow: hidden;
+        }
+
+        /* ============= HEADER ============= */
+        header {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            grid-column: 1;
+            flex-shrink: 0;
+        }
+
+        header h1 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin: 0 0 3px 0;
+        }
+
+        header .age-info {
+            color: #667eea;
+            font-size: 1em;
+            font-weight: 600;
+        }
+
+        /* ============= MAIN GRID LAYOUT ============= */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto 1fr;
+            gap: 8px;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        /* ============= SECTION 1: INPUT LOG ============= */
+        .section-input {
+            background: white;
+            border-radius: 10px;
+            padding: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            min-height: 0;
+        }
+
+        .section-input h2 {
+            color: #764ba2;
+            font-size: 0.95em;
+            margin: 0 0 10px 0;
+            text-align: center;
+        }
+
+        /* ============= SECTION 2: LOGS (Stacked Vertically on Mobile) ============= */
+        .section-logs {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 8px;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        /* ============= SECTION 2A: TODAY'S LOG ============= */
+        .section-today {
+            background: white;
+            border-radius: 10px;
+            padding: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .section-today h3 {
+            color: #764ba2;
+            font-size: 0.95em;
+            margin: 0 0 8px 0;
+            flex-shrink: 0;
+        }
+
+        .today-header {
+            flex-shrink: 0;
+        }
+
+        .date-display {
+            color: #667eea;
+            font-size: 0.8em;
+            margin-bottom: 8px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.65em;
+            opacity: 0.9;
+        }
+
+        .today-logs-scroll {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-right: 3px;
+            min-height: 0;
+        }
+
+        /* ============= SECTION 2B: DETAILED RECORDS ============= */
+        .section-detailed {
+            background: white;
+            border-radius: 10px;
+            padding: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .section-detailed h3 {
+            color: #764ba2;
+            font-size: 0.95em;
+            margin: 0 0 8px 0;
+            flex-shrink: 0;
+        }
+
+        /* ============= HORIZONTAL SCROLL FOR DAYS ============= */
+        .detailed-scroll {
+            flex: 1;
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            display: flex;
+            gap: 8px;
+            padding-bottom: 3px;
+            min-height: 0;
+        }
+
+        .day-block {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            flex-shrink: 0;
+            width: 280px;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .day-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            margin: -10px -10px 8px -10px;
+            font-size: 0.9em;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .day-logs {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-right: 3px;
+            min-height: 0;
+        }
+
+        .log-entry {
+            background: white;
+            padding: 8px;
+            margin-bottom: 6px;
+            border-left: 3px solid #667eea;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.85em;
+        }
+
+        .log-entry.wake { border-left-color: #FF6B6B; }
+        .log-entry.sleep { border-left-color: #9D8DF1; }
+        .log-entry.formula { border-left-color: #4ecdc4; }
+        .log-entry.meal { border-left-color: #f9ca24; }
+        .log-entry.diaper { border-left-color: #a29bfe; }
+        .log-entry.nap { border-left-color: #fd79a8; }
+        .log-entry.special { border-left-color: #ff7675; }
+
+        .log-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .log-time {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 2px;
+            font-size: 0.8em;
+        }
+
+        .log-type {
+            display: inline-block;
+            background: #ddd;
+            color: #555;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.65em;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .log-entry.wake .log-type { background: #FFE0E0; color: #b71c1c; }
+        .log-entry.sleep .log-type { background: #E8E0F0; color: #512da8; }
+        .log-entry.formula .log-type { background: #d4f4f1; color: #0a7067; }
+        .log-entry.meal .log-type { background: #fff4e6; color: #b35806; }
+        .log-entry.diaper .log-type { background: #ede7f6; color: #512da8; }
+        .log-entry.nap .log-type { background: #fce4ec; color: #880e4f; }
+        .log-entry.special .log-type { background: #ffebee; color: #b71c1c; }
+
+        .log-details {
+            color: #666;
+            font-size: 0.75em;
+            line-height: 1.3;
+            word-break: break-word;
+        }
+
+        .btn-delete {
+            background: #ff6b6b;
+            color: white;
+            padding: 4px 6px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75em;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        .btn-delete:active {
+            background: #ff5252;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 15px;
+            font-size: 0.85em;
+        }
+
+        /* ============= FORM ELEMENTS ============= */
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+            font-size: 0.85em;
+        }
+
+        input[type="time"],
+        input[type="number"],
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 45px;
+        }
+
+        .entry-type-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .entry-btn {
+            padding: 8px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.7em;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            min-height: 55px;
+            justify-content: center;
+        }
+
+        .entry-btn:active {
+            border-color: #667eea;
+            background: #f0f0f0;
+        }
+
+        .entry-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .entry-btn-icon {
+            font-size: 1.2em;
+        }
+
+        .entry-btn-text {
+            font-size: 0.6em;
+            line-height: 1;
+            text-align: center;
+        }
+
+        .conditional-field {
+            display: none;
+        }
+
+        .conditional-field.active {
+            display: block;
+        }
+
+        .wake-sleep-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .wake-sleep-btn {
+            padding: 10px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .wake-sleep-btn:active {
+            border-color: #667eea;
+            background: #f0f0f0;
+        }
+
+        .wake-sleep-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* Scrollable ML Selector */
+        .ml-scroll-container {
+            background: #f5f5f5;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .ml-scroll-label {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .ml-scroll {
+            display: flex;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            gap: 5px;
+            padding: 8px 0;
+            scroll-behavior: smooth;
+        }
+
+        .ml-option {
+            flex-shrink: 0;
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #555;
+            transition: all 0.2s;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .ml-option:hover {
+            border-color: #667eea;
+            background: #f0f0f0;
+        }
+
+        .ml-option.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .ml-custom-input {
+            display: grid;
+            grid-template-columns: 1fr 60px;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .ml-custom-input input {
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .ml-custom-input button {
+            padding: 8px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+
+        .ml-display {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.95em;
+            font-weight: 600;
+            color: #667eea;
+            margin-top: 8px;
+        }
+
+        /* ============= MEAL NUTRITION CHECKBOXES ============= */
+        .nutrition-checkboxes {
+            display: none;
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .nutrition-checkboxes.active {
+            display: block;
+        }
+
+        .nutrition-checkboxes label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nutrition-checkboxes label:last-child {
+            margin-bottom: 0;
+        }
+
+        .nutrition-checkboxes input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            margin: 0;
+            padding: 0;
+        }
+
+        .checkbox-label-text {
+            font-size: 0.85em;
+            margin: 0;
+        }
+
+        .mood-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .mood-btn {
+            padding: 10px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8em;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .mood-btn:active {
+            border-color: #667eea;
+            background: #f0f0f0;
+        }
+
+        .mood-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .mood-icon {
+            font-size: 1.5em;
+        }
+
+        .mood-label {
+            font-size: 0.65em;
+            line-height: 1;
+        }
+
+        .meal-type-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .meal-btn {
+            padding: 8px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .meal-btn:active {
+            border-color: #667eea;
+            background: #f0f0f0;
+        }
+
+        .meal-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .optional-label {
+            font-size: 0.75em;
+            color: #999;
+            font-weight: normal;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+        }
+
+        .btn-clear {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .clear-all-btn {
+            background: #ff6b6b;
+            color: white;
+            padding: 10px;
+            width: 100%;
+            font-size: 0.85em;
+            margin-bottom: 8px;
+        }
+
+        .clear-all-btn:active {
+            background: #ff5252;
+        }
+
+        /* ============= CONFIRMATION POPUP ============= */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 300px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .modal-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .modal-title {
+            color: #764ba2;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .modal-message {
+            color: #666;
+            font-size: 0.95em;
+            margin-bottom: 20px;
+        }
+
+        .modal-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .modal-btn:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* ============= RESPONSIVE: TABLET (2 COLUMNS) ============= */
+        @media (min-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 1fr;
+            }
+
+            .section-input {
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+            .section-logs {
+                grid-column: 2;
+                grid-row: 1;
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 1fr;
+            }
+
+            .section-today {
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+            .section-detailed {
+                grid-column: 1;
+                grid-row: 2;
+            }
+        }
+
+        /* ============= RESPONSIVE: DESKTOP (3 COLUMNS) ============= */
+        @media (min-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr 1fr 1fr;
+                grid-template-rows: 1fr;
+            }
+
+            .section-input {
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+            .section-logs {
+                grid-column: 2 / 4;
+                grid-row: 1;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 1fr;
+            }
+
+            .section-today {
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+            .section-detailed {
+                grid-column: 2;
+                grid-row: 1;
+            }
+
+            .day-block {
+                width: 350px;
+            }
+        }
+
+        /* ============= SCROLLBAR STYLING ============= */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.4);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- HEADER -->
+        <header>
+            <h1>👶 Joelle's Log</h1>
+            <div class="age-info" id="ageInfo"></div>
+        </header>
+
+        <!-- MAIN GRID: 3 SECTIONS -->
+        <div class="main-grid">
+            <!-- SECTION 1: INPUT LOG -->
+            <div class="section-input">
+                <h2>📝 Quick Log</h2>
+                
+                <label>What are you logging?</label>
+                <div class="entry-type-buttons">
+                    <button class="entry-btn active" onclick="selectEntryType('wake')">
+                        <span class="entry-btn-icon">⏰</span>
+                        <span class="entry-btn-text">Wake/Sleep</span>
+                    </button>
+                    <button class="entry-btn" onclick="selectEntryType('formula')">
+                        <span class="entry-btn-icon">🍼</span>
+                        <span class="entry-btn-text">Formula</span>
+                    </button>
+                    <button class="entry-btn" onclick="selectEntryType('meal')">
+                        <span class="entry-btn-icon">🍽️</span>
+                        <span class="entry-btn-text">Meal</span>
+                    </button>
+                    <button class="entry-btn" onclick="selectEntryType('diaper')">
+                        <span class="entry-btn-icon">👶</span>
+                        <span class="entry-btn-text">Diaper</span>
+                    </button>
+                    <button class="entry-btn" onclick="selectEntryType('nap')">
+                        <span class="entry-btn-icon">😴</span>
+                        <span class="entry-btn-text">Nap</span>
+                    </button>
+                    <button class="entry-btn" onclick="selectEntryType('special')">
+                        <span class="entry-btn-icon">⚠️</span>
+                        <span class="entry-btn-text">Special</span>
+                    </button>
+                </div>
+
+                <!-- Wake/Sleep -->
+                <div id="wake-fields" class="conditional-field active">
+                    <div class="wake-sleep-selector">
+                        <button type="button" class="wake-sleep-btn active" onclick="selectWakeOrSleep('wake')">⏰ Wake Up</button>
+                        <button type="button" class="wake-sleep-btn" onclick="selectWakeOrSleep('sleep')">😴 Sleep</button>
+                    </div>
+                    <input type="hidden" id="wakeOrSleep" value="wake">
+                    
+                    <div class="form-group">
+                        <label for="time">Time</label>
+                        <input type="time" id="time" required>
+                    </div>
+                </div>
+
+                <!-- Formula -->
+                <div id="formula-fields" class="conditional-field">
+                    <div class="ml-scroll-container">
+                        <div class="ml-scroll-label">Select Amount (ml) <span class="optional-label">Optional</span></div>
+                        <div class="ml-scroll" id="mlScroll">
+                            <button type="button" class="ml-option" onclick="selectMlAmount(0)">Skip</button>
+                            <button type="button" class="ml-option" onclick="selectMlAmount(120)">120ml</button>
+                            <button type="button" class="ml-option" onclick="selectMlAmount(150)">150ml</button>
+                            <button type="button" class="ml-option" onclick="selectMlAmount(180)">180ml</button>
+                            <button type="button" class="ml-option" onclick="selectMlAmount(210)">210ml</button>
+                        </div>
+                        <div class="ml-custom-input">
+                            <input type="number" id="customMl" placeholder="Custom ml" min="0">
+                            <button type="button" onclick="selectCustomMl()">Add</button>
+                        </div>
+                        <div class="ml-display" id="mlDisplay">Not selected</div>
+                        <input type="hidden" id="formulaMl" value="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="time">Time</label>
+                        <input type="time" id="formulaTime" required>
+                    </div>
+                </div>
+
+                <!-- Meal -->
+                <div id="meal-fields" class="conditional-field">
+                    <div class="form-group">
+                        <label>Meal Type <span class="optional-label">Optional</span></label>
+                        <div class="meal-type-buttons">
+                            <button type="button" class="meal-btn active" onclick="selectMealType('breakfast')">🌅 Breakfast</button>
+                            <button type="button" class="meal-btn" onclick="selectMealType('lunch')">☀️ Lunch</button>
+                            <button type="button" class="meal-btn" onclick="selectMealType('dinner')">🌙 Dinner</button>
+                            <button type="button" class="meal-btn" onclick="selectMealType('snack')">🍎 Snack</button>
+                        </div>
+                        <input type="hidden" id="mealType" value="breakfast">
+                    </div>
+
+                    <!-- Nutrition Checkboxes (only for lunch/dinner) -->
+                    <div id="nutrition-checkboxes" class="nutrition-checkboxes">
+                        <label>
+                            <input type="checkbox" id="hasProtein"> 
+                            <span class="checkbox-label-text">🍗 Protein</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="hasCarbs">
+                            <span class="checkbox-label-text">🍚 Carbs</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="hasVeggie">
+                            <span class="checkbox-label-text">🥕 Veggies</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mealDescription">What did she eat? <span class="optional-label">Optional</span></label>
+                        <textarea id="mealDescription" placeholder="e.g., banana with apple..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="mealTime">Time</label>
+                        <input type="time" id="mealTime" required>
+                    </div>
+                </div>
+
+                <!-- Diaper -->
+                <div id="diaper-fields" class="conditional-field">
+                    <div class="form-group">
+                        <label for="diaperType">Type</label>
+                        <select id="diaperType" onchange="updateDiaperFields()">
+                            <option value="wee">Wee (Pee)</option>
+                            <option value="poo">Poo</option>
+                            <option value="both">Both</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="consistencyField">
+                        <label for="diaperConsistency">Consistency (1-5)</label>
+                        <select id="diaperConsistency">
+                            <option value="1">1 - Very Hard</option>
+                            <option value="2">2 - Hard</option>
+                            <option value="3">3 - Normal</option>
+                            <option value="4">4 - Soft</option>
+                            <option value="5">5 - Very Watery</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="diaperNotes">Notes</label>
+                        <input type="text" id="diaperNotes" placeholder="rash, color, etc.">
+                    </div>
+                    <div class="form-group">
+                        <label for="diaperTime">Time</label>
+                        <input type="time" id="diaperTime" required>
+                    </div>
+                </div>
+
+                <!-- Nap -->
+                <div id="nap-fields" class="conditional-field">
+                    <div class="form-group">
+                        <label for="napStartTime">Nap Start Time</label>
+                        <input type="time" id="napStartTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="napEndTime">Wake Up Time <span class="optional-label">Optional</span></label>
+                        <input type="time" id="napEndTime">
+                    </div>
+                    <div class="form-group">
+                        <label for="napDuration">Duration (mins)</label>
+                        <input type="number" id="napDuration" placeholder="Auto-calculated" readonly>
+                    </div>
+                </div>
+
+                <!-- Special -->
+                <div id="special-fields" class="conditional-field">
+                    <div class="form-group">
+                        <label for="specialType">Type</label>
+                        <select id="specialType" onchange="updateSpecialFields()">
+                            <option value="mood">😊 Mood</option>
+                            <option value="fever">🌡️ Fever</option>
+                            <option value="vomit">🤢 Vomiting</option>
+                            <option value="rash">🔴 Rash</option>
+                            <option value="cough">😷 Cough</option>
+                            <option value="diarrhea">💧 Diarrhea</option>
+                            <option value="constipation">🚫 Constipation</option>
+                            <option value="other">⚠️ Other</option>
+                        </select>
+                    </div>
+
+                    <!-- Mood Sub-selection -->
+                    <div id="mood-selector" class="form-group" style="display: none;">
+                        <label>How is she feeling?</label>
+                        <div class="mood-selector">
+                            <button type="button" class="mood-btn active" onclick="selectMood('happy')">
+                                <span class="mood-icon">😊</span>
+                                <span class="mood-label">Happy</span>
+                            </button>
+                            <button type="button" class="mood-btn" onclick="selectMood('sleepy')">
+                                <span class="mood-icon">😴</span>
+                                <span class="mood-label">Sleepy</span>
+                            </button>
+                            <button type="button" class="mood-btn" onclick="selectMood('grumpy')">
+                                <span class="mood-icon">😠</span>
+                                <span class="mood-label">Grumpy</span>
+                            </button>
+                        </div>
+                        <input type="hidden" id="moodType" value="happy">
+                    </div>
+
+                    <div class="form-group" id="special-notes-field">
+                        <label for="specialNotes">Details</label>
+                        <textarea id="specialNotes" placeholder="e.g., 38.5°C, vomited 2 times..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="specialTime">Time</label>
+                        <input type="time" id="specialTime" required>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-add" onclick="addLog()">✅ Add Log</button>
+                    <button class="btn-clear" onclick="clearForm()">Clear</button>
+                </div>
+
+                <button class="clear-all-btn" onclick="clearAllData()">🗑️ Clear All</button>
+            </div>
+
+            <!-- SECTION 2: LOGS (Today + Detailed - Stacked on Mobile) -->
+            <div class="section-logs">
+                <!-- SECTION 2A: TODAY'S LOG -->
+                <div class="section-today">
+                    <div class="today-header">
+                        <h3>📅 Today</h3>
+                        <div class="date-display" id="dateDisplay"></div>
+                    </div>
+                    <div id="statsContainer" class="stats"></div>
+                    <div class="today-logs-scroll">
+                        <div id="todayLogsContainer"></div>
+                    </div>
+                </div>
+
+                <!-- SECTION 2B: DETAILED RECORDS (ALL DAYS) -->
+                <div class="section-detailed">
+                    <h3>📋 All Records</h3>
+                    <div class="detailed-scroll" id="detailedScroll">
+                        <div id="detailedLogsContainer"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIRMATION MODAL -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-icon">✅</div>
+            <div class="modal-title">Logged!</div>
+            <div class="modal-message">Your entry has been saved successfully.</div>
+            <button class="modal-btn" onclick="closeModal()">Great!</button>
+        </div>
+    </div>
+
+    <script>
+        const JOELLE_BIRTHDAY = '2025-01-12';
+        let currentEntryType = 'wake';
+        let currentWakeOrSleep = 'wake';
+        let currentMealType = 'breakfast';
+        let currentMlAmount = 0;
+        let currentMood = 'happy';
+        let mealNutrition = { protein: false, carbs: false, veggie: false };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAgeDisplay();
+            updateDateDisplay();
+            setCurrentTime();
+            displayLogs();
+            updateStats();
+            
+            setInterval(updateAgeDisplay, 24 * 60 * 60 * 1000);
+        });
+
+        function updateAgeDisplay() {
+            const [year, month, day] = JOELLE_BIRTHDAY.split('-').map(Number);
+            const birthDate = new Date(Date.UTC(year, month - 1, day));
+            
+            const today = new Date();
+            const todayUTC = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+            
+            const diffInMs = todayUTC - birthDate;
+            const ageInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+            
+            document.getElementById('ageInfo').textContent = `Day ${ageInDays} 👼`;
+        }
+
+        function updateDateDisplay() {
+            const today = new Date();
+            const options = { weekday: 'short', month: 'short', day: 'numeric' };
+            const dateString = today.toLocaleDateString('en-US', options);
+            document.getElementById('dateDisplay').textContent = dateString;
+        }
+
+        function setCurrentTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('time').value = `${hours}:${minutes}`;
+            document.getElementById('formulaTime').value = `${hours}:${minutes}`;
+            document.getElementById('mealTime').value = `${hours}:${minutes}`;
+            document.getElementById('diaperTime').value = `${hours}:${minutes}`;
+            document.getElementById('napStartTime').value = `${hours}:${minutes}`;
+            document.getElementById('specialTime').value = `${hours}:${minutes}`;
+        }
+
+        function selectEntryType(type) {
+            currentEntryType = type;
+
+            document.querySelectorAll('.entry-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.closest('.entry-btn').classList.add('active');
+
+            document.querySelectorAll('.conditional-field').forEach(field => {
+                field.classList.remove('active');
+            });
+
+            const fieldId = type + '-fields';
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.classList.add('active');
+            }
+
+            if (type === 'diaper') {
+                updateDiaperFields();
+            }
+
+            if (type === 'special') {
+                updateSpecialFields();
+            }
+
+            if (type === 'meal') {
+                updateMealNutritionVisibility();
+            }
+        }
+
+        function selectWakeOrSleep(type) {
+            currentWakeOrSleep = type;
+            document.getElementById('wakeOrSleep').value = type;
+            
+            document.querySelectorAll('.wake-sleep-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function selectMlAmount(ml) {
+            currentMlAmount = ml;
+            document.getElementById('formulaMl').value = ml;
+
+            document.querySelectorAll('.ml-option').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            const display = document.getElementById('mlDisplay');
+            if (ml === 0) {
+                display.textContent = 'Not selected (Optional)';
+                display.style.color = '#999';
+            } else {
+                display.textContent = `${ml}ml selected`;
+                display.style.color = '#667eea';
+            }
+
+            document.getElementById('customMl').value = '';
+        }
+
+        function selectCustomMl() {
+            const customValue = document.getElementById('customMl').value;
+            if (!customValue || customValue <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            selectMlAmount(parseInt(customValue));
+        }
+
+        function selectMealType(type) {
+            currentMealType = type;
+            document.getElementById('mealType').value = type;
+            
+            document.querySelectorAll('.meal-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            updateMealNutritionVisibility();
+        }
+
+        function updateMealNutritionVisibility() {
+            const nutritionCheckboxes = document.getElementById('nutrition-checkboxes');
+            
+            if (currentMealType === 'lunch' || currentMealType === 'dinner') {
+                nutritionCheckboxes.classList.add('active');
+            } else {
+                nutritionCheckboxes.classList.remove('active');
+                document.getElementById('hasProtein').checked = false;
+                document.getElementById('hasCarbs').checked = false;
+                document.getElementById('hasVeggie').checked = false;
+            }
+        }
+
+        function selectMood(mood) {
+            currentMood = mood;
+            document.getElementById('moodType').value = mood;
+            
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function updateDiaperFields() {
+            const diaperType = document.getElementById('diaperType').value;
+            const consistencyField = document.getElementById('consistencyField');
+            
+            if (diaperType === 'wee') {
+                consistencyField.style.display = 'none';
+                document.getElementById('diaperConsistency').value = '';
+            } else {
+                consistencyField.style.display = 'block';
+            }
+        }
+
+        function updateSpecialFields() {
+            const specialType = document.getElementById('specialType').value;
+            const moodSelector = document.getElementById('mood-selector');
+            const specialNotesField = document.getElementById('special-notes-field');
+
+            if (specialType === 'mood') {
+                moodSelector.style.display = 'block';
+                specialNotesField.style.display = 'none';
+            } else {
+                moodSelector.style.display = 'none';
+                specialNotesField.style.display = 'block';
+            }
+        }
+
+        document.addEventListener('change', function(e) {
+            if (e.target.id === 'napEndTime' || e.target.id === 'napStartTime') {
+                const startTime = document.getElementById('napStartTime').value;
+                const endTime = document.getElementById('napEndTime').value;
+                
+                if (startTime && endTime) {
+                    const [startHour, startMin] = startTime.split(':').map(Number);
+                    const [endHour, endMin] = endTime.split(':').map(Number);
+                    
+                    let startInMinutes = startHour * 60 + startMin;
+                    let endInMinutes = endHour * 60 + endMin;
+                    
+                    if (endInMinutes < startInMinutes) {
+                        endInMinutes += 24 * 60;
+                    }
+                    
+                    const duration = endInMinutes - startInMinutes;
+                    document.getElementById('napDuration').value = duration;
+                }
+            }
+        });
+
+        function showModal() {
+            document.getElementById('confirmationModal').classList.add('show');
+            setTimeout(() => {
+                closeModal();
+            }, 2000);
+        }
+
+        function closeModal() {
+            document.getElementById('confirmationModal').classList.remove('show');
+        }
+
+        function addLog() {
+            let logEntry = {
+                id: Date.now(),
+                date: new Date().toISOString().split('T')[0],
+                type: currentEntryType,
+            };
+
+            switch(currentEntryType) {
+                case 'wake':
+                    const time = document.getElementById('time').value;
+                    if (!time) {
+                        alert('Please enter a time');
+                        return;
+                    }
+                    logEntry.time = time;
+                    logEntry.wakeOrSleep = currentWakeOrSleep;
+                    break;
+
+                case 'formula':
+                    const formulaTime = document.getElementById('formulaTime').value;
+                    if (!formulaTime) {
+                        alert('Please enter a time');
+                        return;
+                    }
+                    logEntry.time = formulaTime;
+                    logEntry.ml = currentMlAmount;
+                    break;
+
+                case 'meal':
+                    const mealTime = document.getElementById('mealTime').value;
+                    if (!mealTime) {
+                        alert('Please enter a time');
+                        return;
+                    }
+                    const mealDesc = document.getElementById('mealDescription').value;
+                    logEntry.time = mealTime;
+                    logEntry.mealType = currentMealType;
+                    logEntry.description = mealDesc || '(no details)';
+                    
+                    if (currentMealType === 'lunch' || currentMealType === 'dinner') {
+                        logEntry.nutrition = {
+                            protein: document.getElementById('hasProtein').checked,
+                            carbs: document.getElementById('hasCarbs').checked,
+                            veggie: document.getElementById('hasVeggie').checked
+                        };
+                    }
+                    break;
+
+                case 'diaper':
+                    const diaperTime = document.getElementById('diaperTime').value;
+                    if (!diaperTime) {
+                        alert('Please enter a time');
+                        return;
+                    }
+                    const diaperType = document.getElementById('diaperType').value;
+                    const consistency = document.getElementById('diaperConsistency').value;
+                    const notes = document.getElementById('diaperNotes').value;
+                    logEntry.time = diaperTime;
+                    logEntry.type_diaper = diaperType;
+                    logEntry.consistency = consistency;
+                    logEntry.notes = notes;
+                    break;
+
+                case 'nap':
+                    const napStartTime = document.getElementById('napStartTime').value;
+                    if (!napStartTime) {
+                        alert('Please enter nap start time');
+                        return;
+                    }
+                    const napEndTime = document.getElementById('napEndTime').value;
+                    const napDuration = document.getElementById('napDuration').value;
+                    logEntry.time = napStartTime;
+                    logEntry.endTime = napEndTime || 'Not recorded';
+                    logEntry.duration = napDuration || '—';
+                    break;
+
+                case 'special':
+                    const specialTime = document.getElementById('specialTime').value;
+                    if (!specialTime) {
+                        alert('Please enter a time');
+                        return;
+                    }
+                    const specialType = document.getElementById('specialType').value;
+                    logEntry.time = specialTime;
+                    logEntry.condition = specialType;
+                    
+                    if (specialType === 'mood') {
+                        logEntry.mood = currentMood;
+                    } else {
+                        const specialNotes = document.getElementById('specialNotes').value;
+                        logEntry.details = specialNotes;
+                    }
+                    break;
+            }
+
+            let logs = JSON.parse(localStorage.getItem('joelleLogs') || '[]');
+            logs.push(logEntry);
+            localStorage.setItem('joelleLogs', JSON.stringify(logs));
+
+            clearForm();
+            displayLogs();
+            updateStats();
+            showModal();
+        }
+
+        function clearForm() {
+            selectEntryType('wake');
+            setCurrentTime();
+            currentMlAmount = 0;
+            document.getElementById('formulaMl').value = 0;
+            document.getElementById('mlDisplay').textContent = 'Not selected';
+            document.querySelectorAll('.ml-option').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('customMl').value = '';
+            document.getElementById('mealDescription').value = '';
+            currentMealType = 'breakfast';
+            document.querySelectorAll('.meal-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx === 0);
+            });
+            document.getElementById('hasProtein').checked = false;
+            document.getElementById('hasCarbs').checked = false;
+            document.getElementById('hasVeggie').checked = false;
+            document.getElementById('diaperType').value = 'wee';
+            document.getElementById('diaperConsistency').value = '3';
+            document.getElementById('diaperNotes').value = '';
+            document.getElementById('napStartTime').value = '';
+            document.getElementById('napEndTime').value = '';
+            document.getElementById('napDuration').value = '';
+            document.getElementById('specialType').value = 'mood';
+            document.getElementById('specialNotes').value = '';
+            currentMood = 'happy';
+            document.querySelectorAll('.mood-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx === 0);
+            });
+            updateMealNutritionVisibility();
+            updateSpecialFields();
+        }
+
+        function deleteLog(id) {
+            if (confirm('Delete this entry?')) {
+                let logs = JSON.parse(localStorage.getItem('joelleLogs') || '[]');
+                logs = logs.filter(log => log.id !== id);
+                localStorage.setItem('joelleLogs', JSON.stringify(logs));
+                displayLogs();
+                updateStats();
+            }
+        }
+
+        function displayLogs() {
+            displayTodayLogs();
+            displayDetailedLogs();
+        }
+
+        function displayTodayLogs() {
+            const logs = JSON.parse(localStorage.getItem('joelleLogs') || '[]');
+            const container = document.getElementById('todayLogsContainer');
+            const today = new Date().toISOString().split('T')[0];
+            const todayLogs = logs.filter(log => log.date === today);
+
+            if (todayLogs.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>No logs yet today</p></div>';
+                return;
+            }
+
+            const sortedLogs = todayLogs.sort((a, b) => a.time.localeCompare(b.time));
+
+            let html = '';
+            sortedLogs.forEach(log => {
+                html += `<div class="log-entry ${log.type}">
+                    <div class="log-content">
+                        <div class="log-time">${log.time}</div>
+                        <div class="log-type">${getLogTypeLabel(log)}</div>
+                        <div class="log-details">${getLogDetails(log)}</div>
+                    </div>
+                    <button class="btn-delete" onclick="deleteLog(${log.id})">🗑️</button>
+                </div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function displayDetailedLogs() {
+            const logs = JSON.parse(localStorage.getItem('joelleLogs') || '[]');
+            const container = document.getElementById('detailedLogsContainer');
+
+            if (logs.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>No records yet</p></div>';
+                return;
+            }
+
+            const grouped = {};
+            logs.forEach(log => {
+                if (!grouped[log.date]) {
+                    grouped[log.date] = [];
+                }
+                grouped[log.date].push(log);
+            });
+
+            const sortedDates = Object.keys(grouped).sort().reverse();
+
+            let html = '';
+            sortedDates.forEach(date => {
+                const dayLogs = grouped[date].sort((a, b) => a.time.localeCompare(b.time));
+                const dateObj = new Date(date + 'T00:00:00');
+                const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+                html += `<div class="day-block">
+                    <div class="day-header">${dayName}</div>
+                    <div class="day-logs">`;
+
+                dayLogs.forEach(log => {
+                    html += `<div class="log-entry ${log.type}">
+                        <div class="log-content">
+                            <div class="log-time">${log.time}</div>
+                            <div class="log-type">${getLogTypeLabel(log)}</div>
+                            <div class="log-details">${getLogDetails(log)}</div>
+                        </div>
+                        <button class="btn-delete" onclick="deleteLog(${log.id})">🗑️</button>
+                    </div>`;
+                });
+
+                html += `</div></div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function getLogTypeLabel(log) {
+            switch(log.type) {
+                case 'wake':
+                    return log.wakeOrSleep === 'wake' ? '⏰ Wake Up' : '😴 Sleep';
+                case 'formula': 
+                    return log.ml > 0 ? `🍼 Formula (${log.ml}ml)` : '🍼 Formula';
+                case 'meal': 
+                    return `🍽️ ${log.mealType?.charAt(0).toUpperCase() + log.mealType?.slice(1) || 'Meal'}`;
+                case 'diaper': return '👶 Diaper';
+                case 'nap': return '😴 Nap';
+                case 'special':
+                    if (log.condition === 'mood') {
+                        const moodIcons = { happy: '😊', sleepy: '😴', grumpy: '😠' };
+                        return `${moodIcons[log.mood] || '😊'} ${log.mood?.charAt(0).toUpperCase() + log.mood?.slice(1)}`;
+                    }
+                    return `⚠️ ${log.condition?.charAt(0).toUpperCase() + log.condition?.slice(1)}`;
+                default: return log.type;
+            }
+        }
+
+        function getLogDetails(log) {
+            switch(log.type) {
+                case 'wake':
+                    return log.wakeOrSleep === 'wake' ? 'Woke up' : 'Went to sleep';
+                case 'formula':
+                    return log.ml > 0 ? `${log.ml}ml` : 'No amount recorded';
+                case 'meal':
+                    let mealDetails = log.description;
+                    if (log.nutrition) {
+                        const nutrition = [];
+                        if (log.nutrition.protein) nutrition.push('🍗 Protein');
+                        if (log.nutrition.carbs) nutrition.push('🍚 Carbs');
+                        if (log.nutrition.veggie) nutrition.push('🥕 Veggies');
+                        if (nutrition.length > 0) {
+                            mealDetails += `<br>${nutrition.join(' • ')}`;
+                        }
+                    }
+                    return mealDetails;
+                case 'diaper':
+                    const consistencyLabels = ['Very Hard', 'Hard', 'Normal', 'Soft', 'Very Watery'];
+                    let details = log.type_diaper;
+                    if (log.type_diaper !== 'wee' && log.consistency) {
+                        details += ` • ${consistencyLabels[log.consistency-1]}`;
+                    }
+                    if (log.notes) details += `<br>${log.notes}`;
+                    return details;
+                case 'nap':
+                    return `${log.duration}min (${log.time}-${log.endTime})`;
+                case 'special':
+                    if (log.condition === 'mood') {
+                        return `Mood: ${log.mood?.charAt(0).toUpperCase() + log.mood?.slice(1)}`;
+                    }
+                    return log.details || 'No details';
+                default:
+                    return '';
+            }
+        }
+
+        function updateStats() {
+            const logs = JSON.parse(localStorage.getItem('joelleLogs') || '[]');
+            const today = new Date().toISOString().split('T')[0];
+            const todayLogs = logs.filter(log => log.date === today);
+
+            const stats = {
+                feedings: todayLogs.filter(log => log.type === 'formula').length,
+                meals: todayLogs.filter(log => log.type === 'meal').length,
+                diapers: todayLogs.filter(log => log.type === 'diaper').length,
+                naps: todayLogs.filter(log => log.type === 'nap').length
+            };
+
+            let html = `
+                <div class="stat-card">
+                    <div class="stat-number">${stats.feedings}</div>
+                    <div class="stat-label">Feedings</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.meals}</div>
+                    <div class="stat-label">Meals</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.diapers}</div>
+                    <div class="stat-label">Diapers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.naps}</div>
+                    <div class="stat-label">Naps</div>
+                </div>
+            `;
+
+            document.getElementById('statsContainer').innerHTML = html;
+        }
+
+        function clearAllData() {
+            if (confirm('Delete ALL log entries? Cannot undo!')) {
+                localStorage.removeItem('joelleLogs');
+                displayLogs();
+                updateStats();
+            }
+        }
+    </script>
+</body>
+</html>
