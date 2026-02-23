@@ -6,6 +6,83 @@
     <title>Joelle's Baby Schedule Log</title>
     
     <style>
+        .login-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.login-container {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    text-align: center;
+    width: 90%;
+    max-width: 300px;
+}
+
+.login-container h2 {
+    color: #764ba2;
+    margin-bottom: 10px;
+    font-size: 1.5em;
+}
+
+.login-container p {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 0.9em;
+}
+
+.login-container input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+.login-container input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.login-container button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.login-container button:active {
+    transform: scale(0.98);
+}
+
+.error-msg {
+    color: #f44336;
+    font-size: 0.85em;
+    margin-top: 10px;
+    display: none;
+}
+
+.error-msg.show {
+    display: block;
+}
         * {
             margin: 0;
             padding: 0;
@@ -802,7 +879,23 @@
     </style>
 </head>
 <body>
-    <div class="app">
+    <!-- Add this login modal section right after the <body> tag, before your existing app -->
+
+<div id="loginModal" class="login-modal">
+    <div class="login-container">
+        <h2>Joelle's Baby Log</h2>
+        <p>Enter password to access</p>
+        <input 
+            type="password" 
+            id="passwordInput" 
+            placeholder="Enter password"
+            onkeypress="if(event.key==='Enter') checkPassword()"
+        >
+        <button onclick="checkPassword()">Login</button>
+        <p id="errorMsg" class="error-msg"></p>
+    </div>
+</div>
+    <div id="appContainer" class="app" style="display: none;">
         <header>
             <h1>👶 Joelle's Log</h1>
             <div class="age-info" id="ageInfo"></div>
@@ -1041,7 +1134,7 @@
                 </div>
             </div>
 
-            <div class="logs-column" style="display: none;">
+            <div class="logs-column" ="display: none;">
                 <div class="section-today">
                     <div class="today-header">
                         <h3>📅 Today</h3>
@@ -1064,6 +1157,42 @@
     </div>
 
  <script>
+     // Password configuration - change this to your desired password
+const APP_PASSWORD = "baby2026"; // Change this to whatever password you want
+
+function checkPassword() {
+    const password = document.getElementById('passwordInput').value;
+    const errorMsg = document.getElementById('errorMsg');
+    
+    if (password === APP_PASSWORD) {
+        // Password is correct - hide login and show app
+        document.getElementById('loginModal').style.display = 'none';
+        document.getElementById('appContainer').style.display = 'grid';
+        
+        // Store session in browser (lasts until page is closed)
+        sessionStorage.setItem('authenticated', 'true');
+        
+        // Clear the input
+        document.getElementById('passwordInput').value = '';
+    } else {
+        // Wrong password
+        errorMsg.textContent = 'Incorrect password';
+        errorMsg.classList.add('show');
+        document.getElementById('passwordInput').value = '';
+        
+        setTimeout(() => {
+            errorMsg.classList.remove('show');
+        }, 3000);
+    }
+}
+
+// On page load, check if already authenticated (in this session)
+window.addEventListener('load', function() {
+    if (sessionStorage.getItem('authenticated') === 'true') {
+        document.getElementById('loginModal').style.display = 'none';
+        document.getElementById('appContainer').style.display = 'grid';
+    }
+});
     // ====== SUPABASE CONFIG ======
     const SUPABASE_URL = 'https://obwsdxribtoxgapfvwws.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9id3NkeHJpYnRveGdhcGZ2d3dzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDkzNjYsImV4cCI6MjA4NzQyNTM2Nn0.GqDChm1GAtEksENYvvpkkl9hLq7fG4ccfyC4VWxEyjA';
@@ -1243,7 +1372,7 @@
         const d = document.getElementById('mlDisplay');
         if (d) {
             d.textContent = ml === 0 ? 'Not selected' : `${ml}ml selected`;
-            d.style.color = ml === 0 ? '#999' : '#667eea';
+            d..color = ml === 0 ? '#999' : '#667eea';
         }
     }
 
@@ -1280,15 +1409,15 @@
 
     function updateDiaperFields() {
         const f = document.getElementById('consistencyField');
-        if (f) f.style.display = document.getElementById('diaperType')?.value === 'wee' ? 'none' : 'block';
+        if (f) f..display = document.getElementById('diaperType')?.value === 'wee' ? 'none' : 'block';
     }
 
     function updateSpecialFields() {
         const t = document.getElementById('specialType')?.value;
         const m = document.getElementById('mood-selector');
         const n = document.getElementById('special-notes-field');
-        if (m) m.style.display = t === 'mood' ? 'block' : 'none';
-        if (n) n.style.display = t === 'mood' ? 'none' : 'block';
+        if (m) m..display = t === 'mood' ? 'block' : 'none';
+        if (n) n..display = t === 'mood' ? 'none' : 'block';
     }
 
     document.addEventListener('change', (e) => {
