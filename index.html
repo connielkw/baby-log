@@ -57,6 +57,16 @@
             font-weight: 600;
         }
 
+        .sync-status {
+            font-size: 0.75em;
+            color: #4caf50;
+            margin-top: 3px;
+        }
+
+        .sync-status.offline {
+            color: #ff9800;
+        }
+
         .content-wrapper {
             display: flex;
             flex-direction: column;
@@ -671,7 +681,7 @@
             grid-template-columns: 2fr 1fr;
             gap: 8px;
             margin-top: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 0px;
             flex-shrink: 0;
         }
 
@@ -718,7 +728,8 @@
             padding: 10px;
             width: 100%;
             font-size: 0.85em;
-            margin-bottom: 8px;
+            margin-bottom: 0px;
+            margin-top: 8px;
             flex-shrink: 0;
         }
 
@@ -795,6 +806,7 @@
         <header>
             <h1>👶 Joelle's Log</h1>
             <div class="age-info" id="ageInfo"></div>
+            <div class="sync-status" id="syncStatus">🟢 Synced</div>
         </header>
 
         <div class="content-wrapper">
@@ -1052,6 +1064,11 @@
     </div>
 
     <script>
+        // ====== SUPABASE CONFIG - EDIT THESE TWO LINES ======
+        const SUPABASE_URL = 'https://obwsdxribtoxgapfvwws.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9id3NkeHJpYnRveGdhcGZ2d3dzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDkzNjYsImV4cCI6MjA4NzQyNTM2Nn0.GqDChm1GAtEksENYvvpkkl9hLq7fG4ccfyC4VWxEyjA';
+        // ======================================================
+
         const JOELLE_BIRTHDAY = '2025-01-12';
         let currentEntryType = 'wake';
         let currentWakeOrSleep = 'wake';
@@ -1063,10 +1080,86 @@
             updateAgeDisplay();
             updateDateDisplay();
             setCurrentTime();
-            displayLogs();
+            loadLogsFromSupabase();
             updateStats();
             setInterval(updateAgeDisplay, 24 * 60 * 60 * 1000);
         });
+
+        async function loadLogsFromSupabase() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/logs?order=created_at.desc`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                const data = await response.json();
+                displayLogs(data || []);
+                updateStats(data || []);
+                updateSyncStatus(true);
+            } catch (error) {
+                console.error('Error loading logs:', error);
+                updateSyncStatus(false);
+            }
+        }
+
+        async function addLogToSupabase(logEntry) {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/logs`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(logEntry)
+                });
+                
+                if (response.ok) {
+                    loadLogsFromSupabase();
+                    updateSyncStatus(true);
+                } else {
+                    throw new Error('Failed to add log');
+                }
+            } catch (error) {
+                console.error('Error adding log:', error);
+                updateSyncStatus(false);
+                alert('Failed to save log. Check your API keys.');
+            }
+        }
+
+        async function deleteLogFromSupabase(id) {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/logs?id=eq.${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                if (response.ok) {
+                    loadLogsFromSupabase();
+                } else {
+                    throw new Error('Failed to delete log');
+                }
+            } catch (error) {
+                console.error('Error deleting log:', error);
+                alert('Failed to delete log');
+            }
+        }
+
+        function updateSyncStatus(isOnline) {
+            const status = document.getElementById('syncStatus');
+            if (isOnline) {
+                status.textContent = '🟢 Synced';
+                status.classList.remove('offline');
+            } else {
+                status.textContent = '🔴 Offline';
+                status.classList.add('offline');
+            }
+        }
 
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
@@ -1212,7 +1305,6 @@
         function addLog() {
             const btn = document.getElementById('addLogBtn');
             let logEntry = {
-                id: Date.now(),
                 date: new Date().toISOString().split('T')[0],
                 type: currentEntryType,
             };
@@ -1237,11 +1329,11 @@
                     logEntry.mealType = currentMealType;
                     logEntry.description = document.getElementById('mealDescription').value || '(no details)';
                     if (currentMealType === 'lunch' || currentMealType === 'dinner') {
-                        logEntry.nutrition = {
+                        logEntry.nutrition = JSON.stringify({
                             protein: document.getElementById('hasProtein').checked,
                             carbs: document.getElementById('hasCarbs').checked,
                             veggie: document.getElementById('hasVeggie').checked
-                        };
+                        });
                     }
                     break;
                 case 'diaper':
@@ -1272,9 +1364,7 @@
                     break;
             }
 
-            let logs = JSON.parse(localStorage.getItem('joelleLogs') || '[]');
-            logs.push(logEntry);
-            localStorage.setItem('joelleLogs', JSON.stringify(logs));
+            addLogToSupabase(logEntry);
             
             btn.textContent = '✅ Logged!';
             btn.classList.add('logged');
@@ -1287,8 +1377,6 @@
             }, 2000);
             
             clearForm();
-            displayLogs();
-            updateStats();
         }
 
         function clearForm() {
@@ -1321,23 +1409,18 @@
 
         function deleteLog(id) {
             if (confirm('Delete this entry?')) {
-                let logs = JSON.parse(localStorage.getItem('joelleLogs') || '[]');
-                logs = logs.filter(log => log.id !== id);
-                localStorage.setItem('joelleLogs', JSON.stringify(logs));
-                displayLogs();
-                updateStats();
+                deleteLogFromSupabase(id);
             }
         }
 
-        function displayLogs() {
-            const logs = JSON.parse(localStorage.getItem('joelleLogs') || '[]');
-            displayTodayLogs(logs);
-            displayDetailedLogs(logs);
+        function displayLogs(allLogs = []) {
+            displayTodayLogs(allLogs);
+            displayDetailedLogs(allLogs);
         }
 
-        function displayTodayLogs(logs) {
+        function displayTodayLogs(allLogs = []) {
             const today = new Date().toISOString().split('T')[0];
-            const todayLogs = logs.filter(log => log.date === today).sort((a, b) => a.time.localeCompare(b.time));
+            const todayLogs = allLogs.filter(log => log.date === today).sort((a, b) => a.time.localeCompare(b.time));
             
             let html = '';
             if (todayLogs.length === 0) {
@@ -1359,9 +1442,9 @@
             document.getElementById('todayLogsContainer2').innerHTML = html;
         }
 
-        function displayDetailedLogs(logs) {
+        function displayDetailedLogs(allLogs = []) {
             const grouped = {};
-            logs.forEach(log => {
+            allLogs.forEach(log => {
                 if (!grouped[log.date]) grouped[log.date] = [];
                 grouped[log.date].push(log);
             });
@@ -1421,11 +1504,14 @@
                 case 'meal':
                     let details = log.description;
                     if (log.nutrition) {
-                        const nutrition = [];
-                        if (log.nutrition.protein) nutrition.push('🍗 Protein');
-                        if (log.nutrition.carbs) nutrition.push('🍚 Carbs');
-                        if (log.nutrition.veggie) nutrition.push('🥕 Veggies');
-                        if (nutrition.length > 0) details += `<br>${nutrition.join(' • ')}`;
+                        try {
+                            const nutrition = JSON.parse(log.nutrition);
+                            const nutArray = [];
+                            if (nutrition.protein) nutArray.push('🍗 Protein');
+                            if (nutrition.carbs) nutArray.push('🍚 Carbs');
+                            if (nutrition.veggie) nutArray.push('🥕 Veggies');
+                            if (nutArray.length > 0) details += `<br>${nutArray.join(' • ')}`;
+                        } catch (e) {}
                     }
                     return details;
                 case 'diaper':
@@ -1442,10 +1528,9 @@
             }
         }
 
-        function updateStats() {
-            const logs = JSON.parse(localStorage.getItem('joelleLogs') || '[]');
+        function updateStats(allLogs = []) {
             const today = new Date().toISOString().split('T')[0];
-            const todayLogs = logs.filter(log => log.date === today);
+            const todayLogs = allLogs.filter(log => log.date === today);
             const stats = {
                 feedings: todayLogs.filter(log => log.type === 'formula').length,
                 meals: todayLogs.filter(log => log.type === 'meal').length,
@@ -1464,9 +1549,7 @@
 
         function clearAllData() {
             if (confirm('Delete ALL log entries? Cannot undo!')) {
-                localStorage.removeItem('joelleLogs');
-                displayLogs();
-                updateStats();
+                alert('Feature coming soon! For now, delete entries individually.');
             }
         }
     </script>
