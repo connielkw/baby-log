@@ -879,8 +879,6 @@
     </style>
 </head>
 <body>
-    <!-- Add this login modal section right after the <body> tag, before your existing app -->
-
 <div id="loginModal" class="login-modal">
     <div class="login-container">
         <h2>Joelle's Baby Log</h2>
@@ -1372,7 +1370,7 @@ window.addEventListener('load', function() {
         const d = document.getElementById('mlDisplay');
         if (d) {
             d.textContent = ml === 0 ? 'Not selected' : `${ml}ml selected`;
-            d..color = ml === 0 ? '#999' : '#667eea';
+            d.style.color = ml === 0 ? '#999' : '#667eea';
         }
     }
 
@@ -1409,15 +1407,15 @@ window.addEventListener('load', function() {
 
     function updateDiaperFields() {
         const f = document.getElementById('consistencyField');
-        if (f) f..display = document.getElementById('diaperType')?.value === 'wee' ? 'none' : 'block';
+        if (f) f.style.display = document.getElementById('diaperType')?.value === 'wee' ? 'none' : 'block';
     }
 
     function updateSpecialFields() {
         const t = document.getElementById('specialType')?.value;
         const m = document.getElementById('mood-selector');
         const n = document.getElementById('special-notes-field');
-        if (m) m..display = t === 'mood' ? 'block' : 'none';
-        if (n) n..display = t === 'mood' ? 'none' : 'block';
+        if (m) m.style.display = t === 'mood' ? 'block' : 'none';
+        if (n) n.style.display = t === 'mood' ? 'none' : 'block';
     }
 
     document.addEventListener('change', (e) => {
