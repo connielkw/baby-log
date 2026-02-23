@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Joelle's Baby Schedule Log</title>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -35,7 +40,6 @@
             overflow: hidden;
         }
 
-        /* ============= HEADER ============= */
         header {
             background: white;
             padding: 12px;
@@ -57,7 +61,16 @@
             font-weight: 600;
         }
 
-        /* ============= CONTENT WRAPPER ============= */
+        .sync-status {
+            font-size: 0.75em;
+            color: #4caf50;
+            margin-top: 3px;
+        }
+
+        .sync-status.offline {
+            color: #ff9800;
+        }
+
         .content-wrapper {
             display: flex;
             flex-direction: column;
@@ -66,7 +79,6 @@
             flex: 1;
         }
 
-        /* ============= TABS ============= */
         .tabs {
             display: flex;
             gap: 5px;
@@ -102,7 +114,6 @@
             border-color: #667eea;
         }
 
-        /* ============= TAB CONTENT ============= */
         .tab-content {
             display: none;
             flex: 1;
@@ -116,7 +127,6 @@
             flex-direction: column;
         }
 
-        /* ============= SECTION 1: INPUT LOG ============= */
         .section-input {
             background: white;
             border-radius: 10px;
@@ -137,7 +147,6 @@
             flex-shrink: 0;
         }
 
-        /* ============= SECTION 2A: TODAY'S LOG ============= */
         .section-today {
             background: white;
             border-radius: 10px;
@@ -200,7 +209,6 @@
             min-height: 0;
         }
 
-        /* ============= SECTION 2B: DETAILED RECORDS ============= */
         .section-detailed {
             background: white;
             border-radius: 10px;
@@ -210,6 +218,7 @@
             flex-direction: column;
             overflow: hidden;
             min-height: 0;
+            flex: 1;
         }
 
         .section-detailed h3 {
@@ -219,7 +228,6 @@
             flex-shrink: 0;
         }
 
-        /* ============= VERTICAL SCROLL FOR ALL RECORDS ============= */
         .detailed-scroll {
             flex: 1;
             overflow-y: auto;
@@ -272,7 +280,6 @@
             align-items: flex-start;
             gap: 8px;
             font-size: 0.85em;
-            flex-shrink: 0;
         }
 
         .log-entry.wake { border-left-color: #FF6B6B; }
@@ -344,7 +351,6 @@
             font-size: 0.85em;
         }
 
-        /* ============= FORM ELEMENTS ============= */
         .form-group {
             margin-bottom: 10px;
         }
@@ -468,7 +474,6 @@
             border-color: #667eea;
         }
 
-        /* Scrollable ML Selector */
         .ml-scroll-container {
             background: #f5f5f5;
             border: 2px solid #ddd;
@@ -556,7 +561,6 @@
             margin-top: 8px;
         }
 
-        /* ============= MEAL NUTRITION CHECKBOXES ============= */
         .nutrition-checkboxes {
             display: none;
             background: #f5f5f5;
@@ -692,7 +696,7 @@
             font-size: 0.85em;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.1s;
+            transition: all 0.1s;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -704,6 +708,17 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 12px;
+        }
+
+        .btn-add:disabled {
+            background: #ccc;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        .btn-add.logged {
+            background: #4caf50;
+            color: white;
         }
 
         .btn-clear {
@@ -725,86 +740,6 @@
             background: #ff5252;
         }
 
-        /* ============= CONFIRMATION POPUP ============= */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background-color: white;
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            max-width: 300px;
-            animation: slideIn 0.3s ease;
-        }
-
-        .modal-icon {
-            font-size: 3em;
-            margin-bottom: 15px;
-        }
-
-        .modal-title {
-            color: #764ba2;
-            font-size: 1.3em;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .modal-message {
-            color: #666;
-            font-size: 0.95em;
-            margin-bottom: 20px;
-        }
-
-        .modal-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.9em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .modal-btn:active {
-            transform: scale(0.95);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        /* ============= RESPONSIVE: TABLET ============= */
         @media (min-width: 768px) {
             .tabs {
                 display: none;
@@ -839,18 +774,8 @@
             .section-detailed {
                 grid-row: 2;
             }
-
-            .detailed-scroll {
-                flex-direction: column;
-                overflow-x: hidden;
-            }
-
-            .day-block {
-                width: auto;
-            }
         }
 
-        /* ============= RESPONSIVE: DESKTOP ============= */
         @media (min-width: 1200px) {
             .content-wrapper {
                 display: grid;
@@ -862,21 +787,8 @@
                 grid-template-rows: 1fr;
                 grid-template-columns: 1fr 1fr;
             }
-
-            .section-input {
-                grid-column: 1;
-            }
-
-            .section-today {
-                grid-column: 1;
-            }
-
-            .section-detailed {
-                grid-column: 2;
-            }
         }
 
-        /* ============= SCROLLBAR STYLING ============= */
         ::-webkit-scrollbar {
             width: 4px;
             height: 4px;
@@ -894,22 +806,20 @@
 </head>
 <body>
     <div class="app">
-        <!-- HEADER -->
         <header>
             <h1>👶 Joelle's Log</h1>
-            <div class="age-info" id="ageInfo"></div>
+            <div class="age-info" id="ageInfo">
+                <div class="sync-status" id="syncStatus">🟢 Synced</div>
+            </div>
         </header>
 
-        <!-- CONTENT WRAPPER -->
         <div class="content-wrapper">
-            <!-- MOBILE TABS -->
             <div class="tabs">
                 <button class="tab-btn active" onclick="switchTab('log')">📝 Log</button>
                 <button class="tab-btn" onclick="switchTab('today')">📅 Today</button>
                 <button class="tab-btn" onclick="switchTab('all')">📋 All</button>
             </div>
 
-            <!-- TAB: LOG INPUT -->
             <div id="log-tab" class="tab-content active">
                 <div class="section-input">
                     <h2>📝 Quick Log</h2>
@@ -942,7 +852,6 @@
                         </button>
                     </div>
 
-                    <!-- Wake/Sleep -->
                     <div id="wake-fields" class="conditional-field active">
                         <div class="wake-sleep-selector">
                             <button type="button" class="wake-sleep-btn active" onclick="selectWakeOrSleep('wake')">⏰ Wake Up</button>
@@ -956,7 +865,6 @@
                         </div>
                     </div>
 
-                    <!-- Formula -->
                     <div id="formula-fields" class="conditional-field">
                         <div class="ml-scroll-container">
                             <div class="ml-scroll-label">Select Amount (ml) <span class="optional-label">Optional</span></div>
@@ -976,12 +884,11 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="time">Time</label>
+                            <label for="formulaTime">Time</label>
                             <input type="time" id="formulaTime" required>
                         </div>
                     </div>
 
-                    <!-- Meal -->
                     <div id="meal-fields" class="conditional-field">
                         <div class="form-group">
                             <label>Meal Type <span class="optional-label">Optional</span></label>
@@ -1019,7 +926,6 @@
                         </div>
                     </div>
 
-                    <!-- Diaper -->
                     <div id="diaper-fields" class="conditional-field">
                         <div class="form-group">
                             <label for="diaperType">Type</label>
@@ -1049,7 +955,6 @@
                         </div>
                     </div>
 
-                    <!-- Nap -->
                     <div id="nap-fields" class="conditional-field">
                         <div class="form-group">
                             <label for="napStartTime">Nap Start Time</label>
@@ -1065,7 +970,6 @@
                         </div>
                     </div>
 
-                    <!-- Special -->
                     <div id="special-fields" class="conditional-field">
                         <div class="form-group">
                             <label for="specialType">Type</label>
@@ -1111,7 +1015,7 @@
                     </div>
 
                     <div class="button-group">
-                        <button class="btn-add" onclick="addLog()">✅ Add Log</button>
+                        <button class="btn-add" id="addLogBtn" onclick="addLog()">✅ Add Log</button>
                         <button class="btn-clear" onclick="clearForm()">Clear</button>
                     </div>
 
@@ -1119,7 +1023,6 @@
                 </div>
             </div>
 
-            <!-- TAB: TODAY'S LOG -->
             <div id="today-tab" class="tab-content">
                 <div class="section-today">
                     <div class="today-header">
@@ -1133,17 +1036,15 @@
                 </div>
             </div>
 
-            <!-- TAB: ALL RECORDS -->
             <div id="all-tab" class="tab-content">
                 <div class="section-detailed">
                     <h3>📋 All Records</h3>
-                    <div class="detailed-scroll" id="detailedScroll">
+                    <div class="detailed-scroll">
                         <div id="detailedLogsContainer"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- LOGS COLUMN FOR TABLET/DESKTOP -->
             <div class="logs-column" style="display: none;">
                 <div class="section-today">
                     <div class="today-header">
@@ -1158,7 +1059,7 @@
 
                 <div class="section-detailed">
                     <h3>📋 All Records</h3>
-                    <div class="detailed-scroll" id="detailedScroll2">
+                    <div class="detailed-scroll">
                         <div id="detailedLogsContainer2"></div>
                     </div>
                 </div>
@@ -1166,17 +1067,25 @@
         </div>
     </div>
 
-    <!-- CONFIRMATION MODAL -->
-    <div id="confirmationModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-icon">✅</div>
-            <div class="modal-title">Logged!</div>
-            <div class="modal-message">Your entry has been saved successfully.</div>
-            <button class="modal-btn" onclick="closeModal()">Great!</button>
-        </div>
-    </div>
-
     <script>
+        // ============= FIREBASE CONFIG =============
+        const firebaseConfig = {
+          apiKey: "AIzaSyDjScDGllV4FCG_DaOSYAPNuHlefetV4eY",
+          authDomain: "joelle-baby-log.firebaseapp.com",
+          databaseURL: "https://joelle-baby-log-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "joelle-baby-log",
+          storageBucket: "joelle-baby-log.firebasestorage.app",
+          messagingSenderId: "457985795809",
+          appId: "1:457985795809:web:d88b5f85c8644ae089b9a0",
+          measurementId: "G-JVYT0998EN"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const logsRef = database.ref('logs');
+
+        // ============= VARIABLES =============
         const JOELLE_BIRTHDAY = '2025-01-12';
         let currentEntryType = 'wake';
         let currentWakeOrSleep = 'wake';
@@ -1184,27 +1093,75 @@
         let currentMlAmount = 0;
         let currentMood = 'happy';
 
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            document.getElementById(tabName + '-tab').classList.add('active');
-            event.target.classList.add('active');
-        }
-
+        // ============= INITIALIZATION =============
         document.addEventListener('DOMContentLoaded', function() {
             updateAgeDisplay();
             updateDateDisplay();
             setCurrentTime();
-            displayLogs();
+            loadLogsFromFirebase();
             updateStats();
-            
+            monitorConnection();
             setInterval(updateAgeDisplay, 24 * 60 * 60 * 1000);
         });
+
+        // ============= CONNECTION MONITORING =============
+        function monitorConnection() {
+            const connectedRef = database.ref('.info/connected');
+            connectedRef.on('value', snap => {
+                const status = document.getElementById('syncStatus');
+                if (snap.val() === true) {
+                    status.textContent = '🟢 Synced';
+                    status.classList.remove('offline');
+                } else {
+                    status.textContent = '🔴 Offline';
+                    status.classList.add('offline');
+                }
+            });
+        }
+
+        // ============= FIREBASE FUNCTIONS =============
+        function addLogToFirebase(logEntry) {
+            const newLogRef = logsRef.push();
+            newLogRef.set({
+                ...logEntry,
+                id: newLogRef.key,
+                addedAt: new Date().toISOString()
+            }).catch(error => {
+                console.error('Firebase write error:', error);
+                alert('❌ Failed to save. Check connection.');
+            });
+        }
+
+        function loadLogsFromFirebase() {
+            logsRef.on('value', snapshot => {
+                if (snapshot.exists()) {
+                    const allLogs = [];
+                    snapshot.forEach(childSnapshot => {
+                        allLogs.push(childSnapshot.val());
+                    });
+                    displayLogs(allLogs);
+                    updateStats(allLogs);
+                } else {
+                    displayLogs([]);
+                    updateStats([]);
+                }
+            });
+        }
+
+        function deleteLogFromFirebase(id) {
+            logsRef.child(id).remove().catch(error => {
+                console.error('Firebase delete error:', error);
+                alert('❌ Failed to delete');
+            });
+        }
+
+        // ============= UI FUNCTIONS =============
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
 
         function updateAgeDisplay() {
             const [year, month, day] = JOELLE_BIRTHDAY.split('-').map(Number);
@@ -1213,7 +1170,7 @@
             const todayUTC = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
             const diffInMs = todayUTC - birthDate;
             const ageInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-            document.getElementById('ageInfo').textContent = `Day ${ageInDays} 👼`;
+            document.getElementById('ageInfo').innerHTML = `Day ${ageInDays} 👼<div class="sync-status" id="syncStatus">🟢 Synced</div>`;
         }
 
         function updateDateDisplay() {
@@ -1340,18 +1297,9 @@
             }
         });
 
-        function showModal() {
-            document.getElementById('confirmationModal').classList.add('show');
-            setTimeout(() => closeModal(), 2000);
-        }
-
-        function closeModal() {
-            document.getElementById('confirmationModal').classList.remove('show');
-        }
-
         function addLog() {
+            const btn = document.getElementById('addLogBtn');
             let logEntry = {
-                id: Date.now(),
                 date: new Date().toISOString().split('T')[0],
                 type: currentEntryType,
             };
@@ -1411,13 +1359,19 @@
                     break;
             }
 
-            let logs = JSON.parse(localStorage.getItem('joelleLogs') || '[]');
-            logs.push(logEntry);
-            localStorage.setItem('joelleLogs', JSON.stringify(logs));
+            addLogToFirebase(logEntry);
+            
+            btn.textContent = '✅ Logged!';
+            btn.classList.add('logged');
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.textContent = '✅ Add Log';
+                btn.classList.remove('logged');
+                btn.disabled = false;
+            }, 2000);
+            
             clearForm();
-            displayLogs();
-            updateStats();
-            showModal();
         }
 
         function clearForm() {
@@ -1450,23 +1404,18 @@
 
         function deleteLog(id) {
             if (confirm('Delete this entry?')) {
-                let logs = JSON.parse(localStorage.getItem('joelleLogs') || '[]');
-                logs = logs.filter(log => log.id !== id);
-                localStorage.setItem('joelleLogs', JSON.stringify(logs));
-                displayLogs();
-                updateStats();
+                deleteLogFromFirebase(id);
             }
         }
 
-        function displayLogs() {
-            displayTodayLogs();
-            displayDetailedLogs();
+        function displayLogs(allLogs = []) {
+            displayTodayLogs(allLogs);
+            displayDetailedLogs(allLogs);
         }
 
-        function displayTodayLogs() {
-            const logs = JSON.parse(localStorage.getItem('joelleLogs') || '[]');
+        function displayTodayLogs(allLogs = []) {
             const today = new Date().toISOString().split('T')[0];
-            const todayLogs = logs.filter(log => log.date === today).sort((a, b) => a.time.localeCompare(b.time));
+            const todayLogs = allLogs.filter(log => log.date === today).sort((a, b) => a.time.localeCompare(b.time));
             
             let html = '';
             if (todayLogs.length === 0) {
@@ -1479,7 +1428,7 @@
                             <div class="log-type">${getLogTypeLabel(log)}</div>
                             <div class="log-details">${getLogDetails(log)}</div>
                         </div>
-                        <button class="btn-delete" onclick="deleteLog(${log.id})">🗑️</button>
+                        <button class="btn-delete" onclick="deleteLog('${log.id}')">🗑️</button>
                     </div>`;
                 });
             }
@@ -1488,10 +1437,9 @@
             document.getElementById('todayLogsContainer2').innerHTML = html;
         }
 
-        function displayDetailedLogs() {
-            const logs = JSON.parse(localStorage.getItem('joelleLogs') || '[]');
+        function displayDetailedLogs(allLogs = []) {
             const grouped = {};
-            logs.forEach(log => {
+            allLogs.forEach(log => {
                 if (!grouped[log.date]) grouped[log.date] = [];
                 grouped[log.date].push(log);
             });
@@ -1514,7 +1462,7 @@
                                 <div class="log-type">${getLogTypeLabel(log)}</div>
                                 <div class="log-details">${getLogDetails(log)}</div>
                             </div>
-                            <button class="btn-delete" onclick="deleteLog(${log.id})">🗑️</button>
+                            <button class="btn-delete" onclick="deleteLog('${log.id}')">🗑️</button>
                         </div>`;
                     });
                     html += `</div></div>`;
@@ -1570,10 +1518,9 @@
             }
         }
 
-        function updateStats() {
-            const logs = JSON.parse(localStorage.getItem('joelleLogs') || '[]');
+        function updateStats(allLogs = []) {
             const today = new Date().toISOString().split('T')[0];
-            const todayLogs = logs.filter(log => log.date === today);
+            const todayLogs = allLogs.filter(log => log.date === today);
             const stats = {
                 feedings: todayLogs.filter(log => log.type === 'formula').length,
                 meals: todayLogs.filter(log => log.type === 'meal').length,
@@ -1592,9 +1539,7 @@
 
         function clearAllData() {
             if (confirm('Delete ALL log entries? Cannot undo!')) {
-                localStorage.removeItem('joelleLogs');
-                displayLogs();
-                updateStats();
+                logsRef.remove();
             }
         }
     </script>
