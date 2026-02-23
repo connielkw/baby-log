@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Joelle's Baby Schedule Log</title>
     
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
+    <!-- Firebase CDN (Compatible Version) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
     
     <style>
         * {
@@ -1068,6 +1068,14 @@
     </div>
 
     <script>
+        // ============= VARIABLES (INITIALIZE FIRST) =============
+        let currentEntryType = 'wake';
+        let currentWakeOrSleep = 'wake';
+        let currentMealType = 'breakfast';
+        let currentMlAmount = 0;
+        let currentMood = 'happy';
+        const JOELLE_BIRTHDAY = '2025-01-12';
+
         // ============= FIREBASE CONFIG =============
         const firebaseConfig = {
           apiKey: "AIzaSyDjScDGllV4FCG_DaOSYAPNuHlefetV4eY",
@@ -1076,22 +1084,13 @@
           projectId: "joelle-baby-log",
           storageBucket: "joelle-baby-log.firebasestorage.app",
           messagingSenderId: "457985795809",
-          appId: "1:457985795809:web:d88b5f85c8644ae089b9a0",
-          measurementId: "G-JVYT0998EN"
+          appId: "1:457985795809:web:d88b5f85c8644ae089b9a0"
         };
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         const logsRef = database.ref('logs');
-
-        // ============= VARIABLES =============
-        const JOELLE_BIRTHDAY = '2025-01-12';
-        let currentEntryType = 'wake';
-        let currentWakeOrSleep = 'wake';
-        let currentMealType = 'breakfast';
-        let currentMlAmount = 0;
-        let currentMood = 'happy';
 
         // ============= INITIALIZATION =============
         document.addEventListener('DOMContentLoaded', function() {
