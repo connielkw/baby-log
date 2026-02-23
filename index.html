@@ -909,6 +909,280 @@
         }
     </style>
 </head>
+<body>
+        <!-- LOGIN SCREEN -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <h1>👶 Joelle's Log</h1>
+            <p>Enter password to access</p>
+            <div class="login-error" id="loginError"></div>
+            <input type="password" id="passwordInput" placeholder="Password" autofocus>
+            <button type="button" onclick="handleLogin()">Login</button>
+        </div>
+    </div>
+    <div class="app">
+                <header>
+            <div class="header-info">
+                <h1>👶 Joelle's Log</h1>
+                <div class="age-info" id="ageInfo"></div>
+                <div class="sync-status" id="syncStatus">🟢 Synced</div>
+            </div>
+            <button class="logout-btn" onclick="handleLogout()">🔴 Logout</button>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('log')">📝 Log</button>
+                <button class="tab-btn" onclick="switchTab('today')">📅 Today</button>
+                <button class="tab-btn" onclick="switchTab('all')">📋 All</button>
+            </div>
+
+            <div id="log-tab" class="tab-content active">
+                <div class="section-input">
+                    <h2>📝 Quick Log</h2>
+                    
+                    <label>What are you logging?</label>
+                    <div class="entry-type-buttons">
+                        <button class="entry-btn active" onclick="selectEntryType('wake')">
+                            <span class="entry-btn-icon">⏰</span>
+                            <span class="entry-btn-text">Wake/Sleep</span>
+                        </button>
+                        <button class="entry-btn" onclick="selectEntryType('formula')">
+                            <span class="entry-btn-icon">🍼</span>
+                            <span class="entry-btn-text">Formula</span>
+                        </button>
+                        <button class="entry-btn" onclick="selectEntryType('meal')">
+                            <span class="entry-btn-icon">🍽️</span>
+                            <span class="entry-btn-text">Meal</span>
+                        </button>
+                        <button class="entry-btn" onclick="selectEntryType('diaper')">
+                            <span class="entry-btn-icon">👶</span>
+                            <span class="entry-btn-text">Diaper</span>
+                        </button>
+                        <button class="entry-btn" onclick="selectEntryType('nap')">
+                            <span class="entry-btn-icon">😴</span>
+                            <span class="entry-btn-text">Nap</span>
+                        </button>
+                        <button class="entry-btn" onclick="selectEntryType('special')">
+                            <span class="entry-btn-icon">⚠️</span>
+                            <span class="entry-btn-text">Special</span>
+                        </button>
+                    </div>
+
+                    <div id="wake-fields" class="conditional-field active">
+                        <div class="wake-sleep-selector">
+                            <button type="button" class="wake-sleep-btn active" onclick="selectWakeOrSleep('wake')">⏰ Wake Up</button>
+                            <button type="button" class="wake-sleep-btn" onclick="selectWakeOrSleep('sleep')">😴 Sleep</button>
+                        </div>
+                        <input type="hidden" id="wakeOrSleep" value="wake">
+                        
+                        <div class="form-group">
+                            <label for="time">Time</label>
+                            <input type="time" id="time" required>
+                        </div>
+                    </div>
+
+                    <div id="formula-fields" class="conditional-field">
+                        <div class="ml-scroll-container">
+                            <div class="ml-scroll-label">Select Amount (ml) <span class="optional-label">Optional</span></div>
+                            <div class="ml-scroll" id="mlScroll">
+                                <button type="button" class="ml-option" onclick="selectMlAmount(0)">Skip</button>
+                                <button type="button" class="ml-option" onclick="selectMlAmount(120)">120ml</button>
+                                <button type="button" class="ml-option" onclick="selectMlAmount(150)">150ml</button>
+                                <button type="button" class="ml-option" onclick="selectMlAmount(180)">180ml</button>
+                                <button type="button" class="ml-option" onclick="selectMlAmount(210)">210ml</button>
+                            </div>
+                            <div class="ml-custom-input">
+                                <input type="number" id="customMl" placeholder="Custom ml" min="0">
+                                <button type="button" onclick="selectCustomMl()">Add</button>
+                            </div>
+                            <div class="ml-display" id="mlDisplay">Not selected</div>
+                            <input type="hidden" id="formulaMl" value="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="formulaTime">Time</label>
+                            <input type="time" id="formulaTime" required>
+                        </div>
+                    </div>
+
+                    <div id="meal-fields" class="conditional-field">
+                        <div class="form-group">
+                            <label>Meal Type <span class="optional-label">Optional</span></label>
+                            <div class="meal-type-buttons">
+                                <button type="button" class="meal-btn active" onclick="selectMealType('breakfast')">🌅 Breakfast</button>
+                                <button type="button" class="meal-btn" onclick="selectMealType('lunch')">☀️ Lunch</button>
+                                <button type="button" class="meal-btn" onclick="selectMealType('dinner')">🌙 Dinner</button>
+                                <button type="button" class="meal-btn" onclick="selectMealType('snack')">🍎 Snack</button>
+                            </div>
+                            <input type="hidden" id="mealType" value="breakfast">
+                        </div>
+
+                        <div id="nutrition-checkboxes" class="nutrition-checkboxes">
+                            <label>
+                                <input type="checkbox" id="hasProtein"> 
+                                <span class="checkbox-label-text">🍗 Protein</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" id="hasCarbs">
+                                <span class="checkbox-label-text">🍚 Carbs</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" id="hasVeggie">
+                                <span class="checkbox-label-text">🥕 Veggies</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="mealDescription">What did she eat? <span class="optional-label">Optional</span></label>
+                            <textarea id="mealDescription" placeholder="e.g., banana with apple..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="mealTime">Time</label>
+                            <input type="time" id="mealTime" required>
+                        </div>
+                    </div>
+
+                    <div id="diaper-fields" class="conditional-field">
+                        <div class="form-group">
+                            <label for="diaperType">Type</label>
+                            <select id="diaperType" onchange="updateDiaperFields()">
+                                <option value="wee">Wee (Pee)</option>
+                                <option value="poo">Poo</option>
+                                <option value="both">Both</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="consistencyField">
+                            <label for="diaperConsistency">Consistency (1-5)</label>
+                            <select id="diaperConsistency">
+                                <option value="1">1 - Very Hard</option>
+                                <option value="2">2 - Hard</option>
+                                <option value="3">3 - Normal</option>
+                                <option value="4">4 - Soft</option>
+                                <option value="5">5 - Very Watery</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="diaperNotes">Notes</label>
+                            <input type="text" id="diaperNotes" placeholder="rash, color, etc.">
+                        </div>
+                        <div class="form-group">
+                            <label for="diaperTime">Time</label>
+                            <input type="time" id="diaperTime" required>
+                        </div>
+                    </div>
+
+                    <div id="nap-fields" class="conditional-field">
+                        <div class="form-group">
+                            <label for="napStartTime">Nap Start Time</label>
+                            <input type="time" id="napStartTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="napEndTime">Wake Up Time <span class="optional-label">Optional</span></label>
+                            <input type="time" id="napEndTime">
+                        </div>
+                        <div class="form-group">
+                            <label for="napDuration">Duration (mins)</label>
+                            <input type="number" id="napDuration" placeholder="Auto-calculated" readonly>
+                        </div>
+                    </div>
+
+                    <div id="special-fields" class="conditional-field">
+                        <div class="form-group">
+                            <label for="specialType">Type</label>
+                            <select id="specialType" onchange="updateSpecialFields()">
+                                <option value="mood">😊 Mood</option>
+                                <option value="fever">🌡️ Fever</option>
+                                <option value="vomit">🤢 Vomiting</option>
+                                <option value="rash">🔴 Rash</option>
+                                <option value="cough">😷 Cough</option>
+                                <option value="diarrhea">💧 Diarrhea</option>
+                                <option value="constipation">🚫 Constipation</option>
+                                <option value="other">⚠️ Other</option>
+                            </select>
+                        </div>
+
+                        <div id="mood-selector" class="form-group" style="display: none;">
+                            <label>How is she feeling?</label>
+                            <div class="mood-selector">
+                                <button type="button" class="mood-btn active" onclick="selectMood('happy')">
+                                    <span class="mood-icon">😊</span>
+                                    <span class="mood-label">Happy</span>
+                                </button>
+                                <button type="button" class="mood-btn" onclick="selectMood('sleepy')">
+                                    <span class="mood-icon">😴</span>
+                                    <span class="mood-label">Sleepy</span>
+                                </button>
+                                <button type="button" class="mood-btn" onclick="selectMood('grumpy')">
+                                    <span class="mood-icon">😠</span>
+                                    <span class="mood-label">Grumpy</span>
+                                </button>
+                            </div>
+                            <input type="hidden" id="moodType" value="happy">
+                        </div>
+
+                        <div class="form-group" id="special-notes-field">
+                            <label for="specialNotes">Details</label>
+                            <textarea id="specialNotes" placeholder="e.g., 38.5°C, vomited 2 times..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="specialTime">Time</label>
+                            <input type="time" id="specialTime" required>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-add" id="addLogBtn" onclick="addLog()">✅ Add Log</button>
+                        <button class="btn-clear" onclick="clearForm()">Clear</button>
+                    </div>
+
+                    <button class="clear-all-btn" onclick="clearAllData()">🗑️ Clear All</button>
+                </div>
+            </div>
+
+            <div id="today-tab" class="tab-content">
+                <div class="section-today">
+                    <div class="today-header">
+                        <h3>📅 Today</h3>
+                        <div class="date-display" id="dateDisplay"></div>
+                    </div>
+                    <div id="statsContainer" class="stats"></div>
+                    <div class="today-logs-scroll">
+                        <div id="todayLogsContainer"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="all-tab" class="tab-content">
+                <div class="section-detailed">
+                    <h3>📋 All Records</h3>
+                    <div class="detailed-scroll">
+                        <div id="detailedLogsContainer"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="logs-column" style="display: none;">
+                <div class="section-today">
+                    <div class="today-header">
+                        <h3>📅 Today</h3>
+                        <div class="date-display" id="dateDisplay2"></div>
+                    </div>
+                    <div id="statsContainer2" class="stats"></div>
+                    <div class="today-logs-scroll">
+                        <div id="todayLogsContainer2"></div>
+                    </div>
+                </div>
+
+                <div class="section-detailed">
+                    <h3>📋 All Records</h3>
+                    <div class="detailed-scroll">
+                        <div id="detailedLogsContainer2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 <script>
            const SUPABASE_URL = 'https://obwsdxribtoxgapfvwws.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9id3NkeHJpYnRveGdhcGZ2d3dzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDkzNjYsImV4cCI6MjA4NzQyNTM2Nn0.GqDChm1GAtEksENYvvpkkl9hLq7fG4ccfyC4VWxEyjA';
@@ -976,17 +1250,6 @@
                 handleLogin();
             }
         });
-    // ====== SUPABASE CONFIG ======
-    const SUPABASE_URL = 'https://obwsdxribtoxgapfvwws.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9id3NkeHJpYnRveGdhcGZ2d3dzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDkzNjYsImV4cCI6MjA4NzQyNTM2Nn0.GqDChm1GAtEksENYvvpkkl9hLq7fG4ccfyC4VWxEyjA';
-    // ==============================
-
-    const JOELLE_BIRTHDAY = '2025-01-12';
-    let currentEntryType = 'wake';
-    let currentWakeOrSleep = 'wake';
-    let currentMealType = 'breakfast';
-    let currentMlAmount = 0;
-    let currentMood = 'happy';
 
     // Normalize field names from camelCase to snake_case
     function normalizeLogEntry(logEntry) {
@@ -1434,281 +1697,5 @@
         if (confirm('Delete ALL logs?')) alert('Delete entries individually for now.');
     }
 </script>
-<body>
-        <!-- LOGIN SCREEN -->
-    <div class="login-screen" id="loginScreen">
-        <div class="login-box">
-            <h1>👶 Joelle's Log</h1>
-            <p>Enter password to access</p>
-            <div class="login-error" id="loginError"></div>
-            <input type="password" id="passwordInput" placeholder="Password" autofocus>
-            <button type="button" onclick="handleLogin()">Login</button>
-        </div>
-    </div>
-    <div class="app">
-                <header>
-            <div class="header-info">
-                <h1>👶 Joelle's Log</h1>
-                <div class="age-info" id="ageInfo"></div>
-                <div class="sync-status" id="syncStatus">🟢 Synced</div>
-            </div>
-            <button class="logout-btn" onclick="handleLogout()">🔴 Logout</button>
-        </header>
-
-        <div class="content-wrapper">
-            <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('log')">📝 Log</button>
-                <button class="tab-btn" onclick="switchTab('today')">📅 Today</button>
-                <button class="tab-btn" onclick="switchTab('all')">📋 All</button>
-            </div>
-
-            <div id="log-tab" class="tab-content active">
-                <div class="section-input">
-                    <h2>📝 Quick Log</h2>
-                    
-                    <label>What are you logging?</label>
-                    <div class="entry-type-buttons">
-                        <button class="entry-btn active" onclick="selectEntryType('wake')">
-                            <span class="entry-btn-icon">⏰</span>
-                            <span class="entry-btn-text">Wake/Sleep</span>
-                        </button>
-                        <button class="entry-btn" onclick="selectEntryType('formula')">
-                            <span class="entry-btn-icon">🍼</span>
-                            <span class="entry-btn-text">Formula</span>
-                        </button>
-                        <button class="entry-btn" onclick="selectEntryType('meal')">
-                            <span class="entry-btn-icon">🍽️</span>
-                            <span class="entry-btn-text">Meal</span>
-                        </button>
-                        <button class="entry-btn" onclick="selectEntryType('diaper')">
-                            <span class="entry-btn-icon">👶</span>
-                            <span class="entry-btn-text">Diaper</span>
-                        </button>
-                        <button class="entry-btn" onclick="selectEntryType('nap')">
-                            <span class="entry-btn-icon">😴</span>
-                            <span class="entry-btn-text">Nap</span>
-                        </button>
-                        <button class="entry-btn" onclick="selectEntryType('special')">
-                            <span class="entry-btn-icon">⚠️</span>
-                            <span class="entry-btn-text">Special</span>
-                        </button>
-                    </div>
-
-                    <div id="wake-fields" class="conditional-field active">
-                        <div class="wake-sleep-selector">
-                            <button type="button" class="wake-sleep-btn active" onclick="selectWakeOrSleep('wake')">⏰ Wake Up</button>
-                            <button type="button" class="wake-sleep-btn" onclick="selectWakeOrSleep('sleep')">😴 Sleep</button>
-                        </div>
-                        <input type="hidden" id="wakeOrSleep" value="wake">
-                        
-                        <div class="form-group">
-                            <label for="time">Time</label>
-                            <input type="time" id="time" required>
-                        </div>
-                    </div>
-
-                    <div id="formula-fields" class="conditional-field">
-                        <div class="ml-scroll-container">
-                            <div class="ml-scroll-label">Select Amount (ml) <span class="optional-label">Optional</span></div>
-                            <div class="ml-scroll" id="mlScroll">
-                                <button type="button" class="ml-option" onclick="selectMlAmount(0)">Skip</button>
-                                <button type="button" class="ml-option" onclick="selectMlAmount(120)">120ml</button>
-                                <button type="button" class="ml-option" onclick="selectMlAmount(150)">150ml</button>
-                                <button type="button" class="ml-option" onclick="selectMlAmount(180)">180ml</button>
-                                <button type="button" class="ml-option" onclick="selectMlAmount(210)">210ml</button>
-                            </div>
-                            <div class="ml-custom-input">
-                                <input type="number" id="customMl" placeholder="Custom ml" min="0">
-                                <button type="button" onclick="selectCustomMl()">Add</button>
-                            </div>
-                            <div class="ml-display" id="mlDisplay">Not selected</div>
-                            <input type="hidden" id="formulaMl" value="0">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="formulaTime">Time</label>
-                            <input type="time" id="formulaTime" required>
-                        </div>
-                    </div>
-
-                    <div id="meal-fields" class="conditional-field">
-                        <div class="form-group">
-                            <label>Meal Type <span class="optional-label">Optional</span></label>
-                            <div class="meal-type-buttons">
-                                <button type="button" class="meal-btn active" onclick="selectMealType('breakfast')">🌅 Breakfast</button>
-                                <button type="button" class="meal-btn" onclick="selectMealType('lunch')">☀️ Lunch</button>
-                                <button type="button" class="meal-btn" onclick="selectMealType('dinner')">🌙 Dinner</button>
-                                <button type="button" class="meal-btn" onclick="selectMealType('snack')">🍎 Snack</button>
-                            </div>
-                            <input type="hidden" id="mealType" value="breakfast">
-                        </div>
-
-                        <div id="nutrition-checkboxes" class="nutrition-checkboxes">
-                            <label>
-                                <input type="checkbox" id="hasProtein"> 
-                                <span class="checkbox-label-text">🍗 Protein</span>
-                            </label>
-                            <label>
-                                <input type="checkbox" id="hasCarbs">
-                                <span class="checkbox-label-text">🍚 Carbs</span>
-                            </label>
-                            <label>
-                                <input type="checkbox" id="hasVeggie">
-                                <span class="checkbox-label-text">🥕 Veggies</span>
-                            </label>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="mealDescription">What did she eat? <span class="optional-label">Optional</span></label>
-                            <textarea id="mealDescription" placeholder="e.g., banana with apple..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="mealTime">Time</label>
-                            <input type="time" id="mealTime" required>
-                        </div>
-                    </div>
-
-                    <div id="diaper-fields" class="conditional-field">
-                        <div class="form-group">
-                            <label for="diaperType">Type</label>
-                            <select id="diaperType" onchange="updateDiaperFields()">
-                                <option value="wee">Wee (Pee)</option>
-                                <option value="poo">Poo</option>
-                                <option value="both">Both</option>
-                            </select>
-                        </div>
-                        <div class="form-group" id="consistencyField">
-                            <label for="diaperConsistency">Consistency (1-5)</label>
-                            <select id="diaperConsistency">
-                                <option value="1">1 - Very Hard</option>
-                                <option value="2">2 - Hard</option>
-                                <option value="3">3 - Normal</option>
-                                <option value="4">4 - Soft</option>
-                                <option value="5">5 - Very Watery</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="diaperNotes">Notes</label>
-                            <input type="text" id="diaperNotes" placeholder="rash, color, etc.">
-                        </div>
-                        <div class="form-group">
-                            <label for="diaperTime">Time</label>
-                            <input type="time" id="diaperTime" required>
-                        </div>
-                    </div>
-
-                    <div id="nap-fields" class="conditional-field">
-                        <div class="form-group">
-                            <label for="napStartTime">Nap Start Time</label>
-                            <input type="time" id="napStartTime" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="napEndTime">Wake Up Time <span class="optional-label">Optional</span></label>
-                            <input type="time" id="napEndTime">
-                        </div>
-                        <div class="form-group">
-                            <label for="napDuration">Duration (mins)</label>
-                            <input type="number" id="napDuration" placeholder="Auto-calculated" readonly>
-                        </div>
-                    </div>
-
-                    <div id="special-fields" class="conditional-field">
-                        <div class="form-group">
-                            <label for="specialType">Type</label>
-                            <select id="specialType" onchange="updateSpecialFields()">
-                                <option value="mood">😊 Mood</option>
-                                <option value="fever">🌡️ Fever</option>
-                                <option value="vomit">🤢 Vomiting</option>
-                                <option value="rash">🔴 Rash</option>
-                                <option value="cough">😷 Cough</option>
-                                <option value="diarrhea">💧 Diarrhea</option>
-                                <option value="constipation">🚫 Constipation</option>
-                                <option value="other">⚠️ Other</option>
-                            </select>
-                        </div>
-
-                        <div id="mood-selector" class="form-group" style="display: none;">
-                            <label>How is she feeling?</label>
-                            <div class="mood-selector">
-                                <button type="button" class="mood-btn active" onclick="selectMood('happy')">
-                                    <span class="mood-icon">😊</span>
-                                    <span class="mood-label">Happy</span>
-                                </button>
-                                <button type="button" class="mood-btn" onclick="selectMood('sleepy')">
-                                    <span class="mood-icon">😴</span>
-                                    <span class="mood-label">Sleepy</span>
-                                </button>
-                                <button type="button" class="mood-btn" onclick="selectMood('grumpy')">
-                                    <span class="mood-icon">😠</span>
-                                    <span class="mood-label">Grumpy</span>
-                                </button>
-                            </div>
-                            <input type="hidden" id="moodType" value="happy">
-                        </div>
-
-                        <div class="form-group" id="special-notes-field">
-                            <label for="specialNotes">Details</label>
-                            <textarea id="specialNotes" placeholder="e.g., 38.5°C, vomited 2 times..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="specialTime">Time</label>
-                            <input type="time" id="specialTime" required>
-                        </div>
-                    </div>
-
-                    <div class="button-group">
-                        <button class="btn-add" id="addLogBtn" onclick="addLog()">✅ Add Log</button>
-                        <button class="btn-clear" onclick="clearForm()">Clear</button>
-                    </div>
-
-                    <button class="clear-all-btn" onclick="clearAllData()">🗑️ Clear All</button>
-                </div>
-            </div>
-
-            <div id="today-tab" class="tab-content">
-                <div class="section-today">
-                    <div class="today-header">
-                        <h3>📅 Today</h3>
-                        <div class="date-display" id="dateDisplay"></div>
-                    </div>
-                    <div id="statsContainer" class="stats"></div>
-                    <div class="today-logs-scroll">
-                        <div id="todayLogsContainer"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="all-tab" class="tab-content">
-                <div class="section-detailed">
-                    <h3>📋 All Records</h3>
-                    <div class="detailed-scroll">
-                        <div id="detailedLogsContainer"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="logs-column" style="display: none;">
-                <div class="section-today">
-                    <div class="today-header">
-                        <h3>📅 Today</h3>
-                        <div class="date-display" id="dateDisplay2"></div>
-                    </div>
-                    <div id="statsContainer2" class="stats"></div>
-                    <div class="today-logs-scroll">
-                        <div id="todayLogsContainer2"></div>
-                    </div>
-                </div>
-
-                <div class="section-detailed">
-                    <h3>📋 All Records</h3>
-                    <div class="detailed-scroll">
-                        <div id="detailedLogsContainer2"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
- 
 </body>
 </html>
