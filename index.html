@@ -1010,6 +1010,11 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <label for="logDate">Date</label>
+                        <input type="date" id="logDate">
+                    </div>
+
                     <div class="button-group">
                         <button class="btn-add" id="addLogBtn" onclick="addLog()">✅ Add Log</button>
                         <button class="btn-clear" onclick="clearForm()">Clear</button>
@@ -1191,14 +1196,20 @@
         event.target.classList.add('active');
     }
 
+    function getTodayLocal() {
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    }
+
     function updateAgeDisplay() {
         const [y, m, d] = JOELLE_BIRTHDAY.split('-').map(Number);
         const birth = new Date(Date.UTC(y, m - 1, d));
         const today = new Date();
-        const todayUTC = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+        const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
         const days = Math.floor((todayUTC - birth) / (1000 * 60 * 60 * 24));
+        const dateStr = today.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
         const el = document.getElementById('ageInfo');
-        if (el) el.textContent = `Day ${days} 👼`;
+        if (el) el.textContent = `Day ${days} 👼 • ${dateStr}`;
     }
 
     function updateDateDisplay() {
@@ -1216,6 +1227,8 @@
             const el = document.getElementById(id);
             if (el) el.value = time;
         });
+        const logDate = document.getElementById('logDate');
+        if (logDate) logDate.value = getTodayLocal();
     }
 
     function selectEntryType(type) {
@@ -1308,7 +1321,7 @@
 
     function addLog() {
         const btn = document.getElementById('addLogBtn');
-        let entry = { date: new Date().toISOString().split('T')[0], type: currentEntryType };
+        let entry = { date: document.getElementById('logDate')?.value || getTodayLocal(), type: currentEntryType };
 
         switch(currentEntryType) {
             case 'wake':
@@ -1420,7 +1433,7 @@
     }
 
     function displayTodayLogs(logs) {
-        const today = new Date().toISOString().split('T')[0];
+        const today = getTodayLocal();
         const t = logs.filter(l => l.date === today).sort((a, b) => a.time.localeCompare(b.time));
         let html = t.length === 0 ? '<div class="empty-state">No logs today</div>' : '';
         t.forEach(l => {
@@ -1500,7 +1513,7 @@
     }
 
     function updateStats(logs) {
-        const today = new Date().toISOString().split('T')[0];
+        const today = getTodayLocal();
         const t = logs.filter(l => l.date === today);
         const s = {
             feedings: t.filter(l => l.type === 'formula').length,
