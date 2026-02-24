@@ -340,6 +340,82 @@
             background: #ff5252;
         }
 
+        .btn-edit {
+            background: #667eea;
+            color: white;
+            padding: 4px 6px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75em;
+            flex-shrink: 0;
+            transition: background 0.2s;
+            margin-right: 4px;
+        }
+
+        .btn-edit:active {
+            background: #5a6fd6;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            width: 90%;
+            max-width: 320px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+
+        .modal h3 {
+            color: #764ba2;
+            margin-bottom: 16px;
+            font-size: 1em;
+        }
+
+        .modal .form-group {
+            margin-bottom: 12px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .modal-actions button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .btn-modal-save {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-modal-cancel {
+            background: #eee;
+            color: #555;
+        }
+
         .empty-state {
             text-align: center;
             color: #999;
@@ -1068,7 +1144,27 @@
         </div>
     </div>
 
- <script>
+     <div class="modal-overlay" id="editNapModal">
+        <div class="modal">
+            <h3>✏️ Edit Nap</h3>
+            <input type="hidden" id="editNapId">
+            <input type="hidden" id="editNapStartTime">
+            <div class="form-group">
+                <label for="editNapEndTime">Wake Up Time</label>
+                <input type="time" id="editNapEndTime">
+            </div>
+            <div class="form-group">
+                <label for="editNapDuration">Duration (mins)</label>
+                <input type="number" id="editNapDuration" placeholder="Auto-calculated" readonly>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-modal-cancel" onclick="closeEditNapModal()">Cancel</button>
+                <button class="btn-modal-save" onclick="saveNapEdit()">Save</button>
+            </div>
+        </div>
+    </div>
+
+<script>
     // ====== SUPABASE CONFIG ======
     const SUPABASE_URL = 'https://obwsdxribtoxgapfvwws.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9id3NkeHJpYnRveGdhcGZ2d3dzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDkzNjYsImV4cCI6MjA4NzQyNTM2Nn0.GqDChm1GAtEksENYvvpkkl9hLq7fG4ccfyC4VWxEyjA';
@@ -1177,6 +1273,64 @@
             if (response.ok) loadLogsFromSupabase();
         } catch (error) {
             console.error('Delete error:', error);
+        }
+    }
+
+    function editNap(id, startTime) {
+        const now = new Date();
+        const currentTime = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+        document.getElementById('editNapId').value = id;
+        document.getElementById('editNapStartTime').value = startTime;
+        document.getElementById('editNapEndTime').value = currentTime;
+        document.getElementById('editNapDuration').value = '';
+        calcEditNapDuration();
+        document.getElementById('editNapModal').classList.add('active');
+    }
+
+    function calcEditNapDuration() {
+        const s = document.getElementById('editNapStartTime')?.value;
+        const e = document.getElementById('editNapEndTime')?.value;
+        if (s && e) {
+            const [sh, sm] = s.split(':').map(Number);
+            const [eh, em] = e.split(':').map(Number);
+            let start = sh * 60 + sm, end = eh * 60 + em;
+            if (end < start) end += 24 * 60;
+            document.getElementById('editNapDuration').value = end - start;
+        }
+    }
+
+    function closeEditNapModal() {
+        document.getElementById('editNapModal').classList.remove('active');
+    }
+
+    async function saveNapEdit() {
+        const id = document.getElementById('editNapId').value;
+        const endTime = document.getElementById('editNapEndTime').value;
+        const duration = document.getElementById('editNapDuration').value;
+        if (!endTime) { alert('Wake up time required'); return; }
+        try {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/logs?id=eq.${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({ end_time: endTime, duration: duration ? parseInt(duration, 10) : null })
+            });
+            if (response.ok) {
+                closeEditNapModal();
+                loadLogsFromSupabase();
+                updateSyncStatus(true);
+            } else {
+                const error = await response.text();
+                throw new Error(error);
+            }
+        } catch (error) {
+            console.error('Update error:', error);
+            updateSyncStatus(false);
+            alert('Failed to update nap: ' + error.message);
         }
     }
 
@@ -1317,6 +1471,9 @@
                 if (d) d.value = end - start;
             }
         }
+        if (e.target.id === 'editNapEndTime') {
+            calcEditNapDuration();
+        }
     });
 
     function addLog() {
@@ -1437,13 +1594,14 @@
         const t = logs.filter(l => l.date === today).sort((a, b) => a.time.localeCompare(b.time));
         let html = t.length === 0 ? '<div class="empty-state">No logs today</div>' : '';
         t.forEach(l => {
+            const editBtn = l.type === 'nap' ? `<button class="btn-edit" onclick="editNap(${l.id}, '${l.time}')">✏️</button>` : '';
             html += `<div class="log-entry ${l.type}">
                 <div class="log-content">
                     <div class="log-time">${l.time}</div>
                     <div class="log-type">${getLogLabel(l)}</div>
                     <div class="log-details">${getLogDetail(l)}</div>
                 </div>
-                <button class="btn-delete" onclick="deleteLog(${l.id})">🗑️</button>
+                ${editBtn}<button class="btn-delete" onclick="deleteLog(${l.id})">🗑️</button>
             </div>`;
         });
         document.getElementById('todayLogsContainer').innerHTML = html;
@@ -1459,13 +1617,14 @@
             const dayName = new Date(d + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
             html += `<div class="day-block"><div class="day-header">${dayName}</div><div class="day-logs">`;
             dayLogs.forEach(l => {
+                const editBtn = l.type === 'nap' ? `<button class="btn-edit" onclick="editNap(${l.id}, '${l.time}')">✏️</button>` : '';
                 html += `<div class="log-entry ${l.type}">
                     <div class="log-content">
                         <div class="log-time">${l.time}</div>
                         <div class="log-type">${getLogLabel(l)}</div>
                         <div class="log-details">${getLogDetail(l)}</div>
                     </div>
-                    <button class="btn-delete" onclick="deleteLog(${l.id})">🗑️</button>
+                    ${editBtn}<button class="btn-delete" onclick="deleteLog(${l.id})">🗑️</button>
                 </div>`;
             });
             html += `</div></div>`;
