@@ -1008,14 +1008,20 @@
                             </select>
                         </div>
                         <div class="form-group" id="consistencyField">
-                            <label for="diaperConsistency">Consistency (1-5)</label>
-                            <select id="diaperConsistency">
-                                <option value="1">1 - Very Hard</option>
-                                <option value="2">2 - Hard</option>
-                                <option value="3">3 - Normal</option>
-                                <option value="4">4 - Soft</option>
-                                <option value="5">5 - Very Watery</option>
-                            </select>
+                            <label>Consistency</label>
+                            <div class="meal-type-buttons" id="consistencyButtons">
+                                <button type="button" class="meal-btn" onclick="selectConsistency('hard', event)">Hard</button>
+                                <button type="button" class="meal-btn active" onclick="selectConsistency('normal', event)">Normal</button>
+                                <button type="button" class="meal-btn" onclick="selectConsistency('soft', event)">Soft</button>
+                            </div>
+                            <input type="hidden" id="diaperConsistency" value="normal">
+                            <label style="margin-top: 8px; display: block;">Intensity</label>
+                            <div class="meal-type-buttons" id="intensityButtons">
+                                <button type="button" class="meal-btn active" onclick="selectIntensity('1', event)">✓</button>
+                                <button type="button" class="meal-btn" onclick="selectIntensity('2', event)">✓✓</button>
+                                <button type="button" class="meal-btn" onclick="selectIntensity('3', event)">✓✓✓</button>
+                            </div>
+                            <input type="hidden" id="diaperIntensity" value="1">
                         </div>
                         <div class="form-group">
                             <label for="diaperNotes">Notes</label>
@@ -1191,6 +1197,7 @@
         if (logEntry.nutrition) normalized.nutrition = logEntry.nutrition;
         if (logEntry.typeDiaper) normalized.type_diaper = logEntry.typeDiaper;
         if (logEntry.consistency) normalized.consistency = logEntry.consistency;
+        if (logEntry.intensity) normalized.intensity = logEntry.intensity;
         if (logEntry.notes) normalized.notes = logEntry.notes;
         if (logEntry.endTime) normalized.end_time = logEntry.endTime;
         if (logEntry.duration) normalized.duration = logEntry.duration;
@@ -1445,6 +1452,18 @@
         event.target.classList.add('active');
     }
 
+    function selectConsistency(value, event) {
+        document.getElementById('diaperConsistency').value = value;
+        document.querySelectorAll('#consistencyButtons .meal-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+
+    function selectIntensity(value, event) {
+        document.getElementById('diaperIntensity').value = value;
+        document.querySelectorAll('#intensityButtons .meal-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+
     function updateDiaperFields() {
         const f = document.getElementById('consistencyField');
         if (f) f.style.display = document.getElementById('diaperType')?.value === 'wee' ? 'none' : 'block';
@@ -1515,6 +1534,7 @@
                 entry.typeDiaper = document.getElementById('diaperType')?.value;
                 if (entry.typeDiaper !== 'wee') {
                     entry.consistency = document.getElementById('diaperConsistency')?.value;
+                    entry.intensity = document.getElementById('diaperIntensity')?.value;
                 }
                 const dn = document.getElementById('diaperNotes')?.value;
                 if (dn) entry.notes = dn;
@@ -1567,7 +1587,10 @@
         document.getElementById('hasCarbs').checked = false;
         document.getElementById('hasVeggie').checked = false;
         document.getElementById('diaperType').value = 'wee';
-        document.getElementById('diaperConsistency').value = '3';
+        document.getElementById('diaperConsistency').value = 'normal';
+        document.querySelectorAll('#consistencyButtons .meal-btn').forEach((b, i) => b.classList.toggle('active', i === 1));
+        document.getElementById('diaperIntensity').value = '1';
+        document.querySelectorAll('#intensityButtons .meal-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
         document.getElementById('diaperNotes').value = '';
         document.getElementById('napStartTime').value = '';
         document.getElementById('napEndTime').value = '';
@@ -1662,7 +1685,10 @@
                 return d || '(no details)';
             case 'diaper': 
                 let di = l.type_diaper || '';
-                if (l.type_diaper !== 'wee' && l.consistency) di += ` • ${['Very Hard', 'Hard', 'Normal', 'Soft', 'Very Watery'][l.consistency-1]}`;
+                if (l.type_diaper !== 'wee' && l.consistency) {
+                    const intensityTicks = l.intensity ? '✓'.repeat(Number(l.intensity)) : '';
+                    di += ` • ${l.consistency.charAt(0).toUpperCase() + l.consistency.slice(1)}${intensityTicks ? ' ' + intensityTicks : ''}`;
+                }
                 if (l.notes) di += `<br>${l.notes}`;
                 return di;
             case 'nap': return `${l.duration || '?'}min (${l.time}-${l.end_time || '?'})`;
